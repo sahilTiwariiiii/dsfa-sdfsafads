@@ -24,8 +24,24 @@ public class EMRRecord extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String chiefComplaint;
 
+    // Vitals
+    private String bloodPressure;
+    private Double bodyTemperature;
+    private Integer heartRate;
+    private Integer respiratoryRate;
+    private Integer oxygenSaturation; // SpO2
+    private Double weight;
+    private Double height;
+    private Double bmi;
+
     @Column(columnDefinition = "TEXT")
     private String historyOfPresentIllness;
+
+    @Column(columnDefinition = "TEXT")
+    private String pastMedicalHistory;
+
+    @Column(columnDefinition = "TEXT")
+    private String allergies;
 
     @Column(columnDefinition = "TEXT")
     private String physicalExamination;

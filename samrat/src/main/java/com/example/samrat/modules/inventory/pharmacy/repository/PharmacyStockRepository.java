@@ -8,4 +8,5 @@ import java.util.Optional;
 public interface PharmacyStockRepository extends JpaRepository<PharmacyStock, Long> {
     Optional<PharmacyStock> findByBatchNumber(String batchNumber);
     List<PharmacyStock> findByMedicineNameContaining(String name);
+    List<PharmacyStock> findByHospitalIdAndBranchId(Long hospitalId, Long branchId);
 }

@@ -28,26 +28,32 @@ This document provides a comprehensive overview of the **Samrat HMS Backend**, a
 
 ### **1. Access & Admin Domain**
 - **Admin**: Manage Hospitals and Branches.
-- **Departments**: Create and manage clinical/non-clinical departments within each branch (e.g., Cardiology, Orthopedics).
-- **Role & Permission**: Define granular roles (Doctor, Nurse, Admin) and assign specific permissions.
+- **Departments**: Create and manage clinical/non-clinical departments within each branch.
+- **Role & Permission (RBAC)**: Granular permissions for Super Admin, Admin, Doctor, Nurse, Receptionist, Pharmacist, and Lab Technician.
 - **User Management**: Multi-hospital user accounts with hospital-level isolation.
+- **Website Management**: Manage public-facing pages and content via `PublicPage` module.
 
 ### **2. Clinical Domain**
-- **Patient Management**: Supports family mapping (multiple patients sharing a phone number) and automatic UHID generation.
-- **Doctor Management**: Tracks specializations, qualifications, department assignment, and branch-specific availability.
-- **Appointment & Scheduling**: Token/Queue system for OPD visits with daily sequential tokens.
-- **OPD (Outpatient)**: Visit check-ins, vitals recording (BP, SpO2, Temp), and doctor consultation tracking.
-- **IPD (Inpatient)**: Complete admission-to-discharge lifecycle including ward and bed management.
-- **EMR / Medical Records**: Digital clinical notes, history of illness, diagnosis, and digital prescriptions.
-- **Nursing Management**: Nursing notes, hourly vitals tracking, and patient monitoring.
-- **OT (Operation Theatre)**: Surgery scheduling, surgeon/anesthetist assignment, and procedure tracking. **Supports Surgery Video Recording URLs for clinical documentation.**
-- **Emergency / ER**: Triage system (Red, Yellow, Green, Black) and arrival tracking.
-- **Discharge Summary**: Comprehensive discharge reports with treatment summaries and follow-up instructions.
+- **Patient Management**: Registration, UHID generation, and family mapping.
+- **Doctor Management**: Specialization, availability, and branch assignments.
+- **Nurse Management**: Shift management and department-wise availability.
+- **Appointment & Queue**: Sequential token system for OPD visits.
+- **EMR / Medical Records**: Comprehensive records including vitals (BP, Temp, SpO2), history, diagnosis, and prescriptions.
+- **Telemedicine**: Video consultation support via meeting link generation.
+- **IPD / OPD**: Complete outpatient and inpatient lifecycle management.
+- **Nursing Management**: Nursing notes and patient monitoring.
+- **OT & Emergency**: Surgery tracking and triage system.
 
 ### **3. Diagnostics Domain**
-- **Laboratory (LIS)**: Lab orders tracking, sample collection, and result reporting.
-- **Radiology (RIS)**: X-Ray, CT, MRI order management with modality-specific reporting.
-- **Blood Bank**: Donor management, blood group inventory, and bag expiry tracking.
+- **Laboratory (LIS)**: Detailed lab orders and parameter-wise results (Hemoglobin, RBC, etc.).
+- **Radiology (RIS)**: X-Ray, CT, MRI order and reporting flow.
+
+### **4. Support & Dashboards**
+- **Reception / Front Desk**: Visitor logging (entry/exit tracking).
+- **Patient Portal**: Patient view of records, appointments, and billing.
+- **Doctor Dashboard**: Summary of today's appointments, admitted patients, and surgeries.
+- **Integrations**: Mock services for SMS (notifications) and Payments (Stripe/Razorpay style).
+- **Compliance**: Automated audit logging of sensitive actions (READ_EMR, LOGIN, etc.).
 
 ### **4. Inventory & Supply Chain Domain**
 - **Pharmacy Management**: Medicine stock, batch tracking, expiry alerts, and reorder levels.
@@ -91,3 +97,4 @@ This document provides a comprehensive overview of the **Samrat HMS Backend**, a
 
 ---
 *Documentation generated for Samrat HMS Enterprise Backend - 2026-04-05*
+i want to test my each and every module of my hms in such a way so that i can vreify all the things working correctly all modules first just tell me  all the modules which just number and also all the module wise testing like in first what all things we had to test like how should i test each and every module from ip to opd to urget patient and alll that stuff and also our super admin will be crated by our system migration only when we start oru server in that case all all the things should be done and verified correctly so that it will becoem the production ready 

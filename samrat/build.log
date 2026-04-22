@@ -1,0 +1,161 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -------------------------< com.example:samrat >-------------------------
+[INFO] Building samrat 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- dependency:3.8.1:properties (default) @ samrat ---
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ samrat ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 0 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ samrat ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ samrat ---
+[INFO] skip non existing resourceDirectory C:\Users\P cc\Desktop\devs\dsfa-sdfsafads\samrat\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ samrat ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- surefire:3.5.2:test (default-test) @ samrat ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running com.example.samrat.SamratApplicationTests
+20:49:00.589 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.example.samrat.SamratApplicationTests]: SamratApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+20:49:00.808 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.example.samrat.SamratApplication for test class com.example.samrat.SamratApplicationTests
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.4.4)
+
+2026-04-22T20:49:01.349+05:30  INFO 13840 --- [samrat] [           main] c.example.samrat.SamratApplicationTests  : Starting SamratApplicationTests using Java 21.0.10 with PID 13840 (started by P cc in C:\Users\P cc\Desktop\devs\dsfa-sdfsafads\samrat)
+2026-04-22T20:49:01.349+05:30 DEBUG 13840 --- [samrat] [           main] c.example.samrat.SamratApplicationTests  : Running with Spring Boot v3.4.4, Spring v6.2.5
+2026-04-22T20:49:01.351+05:30  INFO 13840 --- [samrat] [           main] c.example.samrat.SamratApplicationTests  : No active profile set, falling back to 1 default profile: "default"
+2026-04-22T20:49:02.342+05:30  INFO 13840 --- [samrat] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-22T20:49:02.563+05:30  INFO 13840 --- [samrat] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 212 ms. Found 17 JPA repository interfaces.
+2026-04-22T20:49:03.422+05:30 DEBUG 13840 --- [samrat] [           main] j.LocalContainerEntityManagerFactoryBean : Building JPA container EntityManagerFactory for persistence unit 'default'
+2026-04-22T20:49:03.444+05:30  INFO 13840 --- [samrat] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-04-22T20:49:03.503+05:30  INFO 13840 --- [samrat] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.11.Final
+2026-04-22T20:49:03.532+05:30  INFO 13840 --- [samrat] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-04-22T20:49:03.909+05:30  INFO 13840 --- [samrat] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-04-22T20:49:03.957+05:30  INFO 13840 --- [samrat] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-04-22T20:49:04.372+05:30  INFO 13840 --- [samrat] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@3bc891f2
+2026-04-22T20:49:04.378+05:30  INFO 13840 --- [samrat] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-04-22T20:49:04.443+05:30  WARN 13840 --- [samrat] [           main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-04-22T20:49:04.469+05:30  INFO 13840 --- [samrat] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0.45
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-04-22T20:49:06.536+05:30  INFO 13840 --- [samrat] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-04-22T20:49:06.913+05:30  INFO 13840 --- [samrat] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-22T20:49:07.033+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:07.085+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:07.172+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:07.236+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:07.308+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:07.308+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:07.312+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:07.318+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:07.318+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:07.322+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:07.347+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:07.348+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:07.352+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:07.358+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:07.363+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:07.364+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:07.371+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:07.421+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:07.425+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:07.427+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:07.458+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:07.472+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:07.481+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:07.491+05:30  INFO 13840 --- [samrat] [           main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-04-22T20:49:08.108+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:08.108+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:08.118+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:08.118+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:08.118+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:08.138+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:08.144+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:08.146+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:08.148+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:08.149+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:08.149+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:08.164+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:08.189+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:08.191+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:08.191+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:08.199+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:08.200+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:08.230+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:08.233+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:08.233+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:08.247+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:08.253+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:08.256+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:08.319+05:30  WARN 13840 --- [samrat] [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-22T20:49:08.362+05:30  INFO 13840 --- [samrat] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name userDetailsServiceImpl
+2026-04-22T20:49:08.793+05:30 DEBUG 13840 --- [samrat] [           main] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, LogoutFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, ExceptionTranslationFilter, AuthorizationFilter
+2026-04-22T20:49:09.039+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:09.045+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:09.046+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:09.049+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:09.056+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:09.059+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:09.062+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:09.080+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:09.087+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:09.090+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:09.090+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:09.114+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:09.118+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:09.122+05:30 DEBUG 13840 --- [samrat] [           main] tor$SharedEntityManagerInvocationHandler : Creating new EntityManager for shared EntityManager invocation
+2026-04-22T20:49:09.258+05:30  INFO 13840 --- [samrat] [           main] c.example.samrat.SamratApplicationTests  : Started SamratApplicationTests in 8.286 seconds (process running for 9.358)
+2026-04-22T20:49:09.267+05:30 DEBUG 13840 --- [samrat] [           main] o.s.orm.jpa.JpaTransactionManager        : Creating new transaction with name [com.example.samrat.core.config.DataInitializer.run]: PROPAGATION_REQUIRED,ISOLATION_DEFAULT
+2026-04-22T20:49:09.268+05:30 DEBUG 13840 --- [samrat] [           main] o.s.orm.jpa.JpaTransactionManager        : Opened new EntityManager [SessionImpl(2076344190<open>)] for JPA transaction
+2026-04-22T20:49:09.290+05:30 DEBUG 13840 --- [samrat] [           main] o.s.orm.jpa.JpaTransactionManager        : Exposing JPA transaction as JDBC [org.springframework.orm.jpa.vendor.HibernateJpaDialect$HibernateConnectionHandle@483381ea]
+2026-04-22T20:49:09.290+05:30 DEBUG 13840 --- [samrat] [           main] o.s.orm.jpa.JpaTransactionManager        : Found thread-bound EntityManager [SessionImpl(2076344190<open>)] for JPA transaction
+2026-04-22T20:49:09.290+05:30 DEBUG 13840 --- [samrat] [           main] o.s.orm.jpa.JpaTransactionManager        : Participating in existing transaction
+2026-04-22T20:49:09.366+05:30 DEBUG 13840 --- [samrat] [           main] org.hibernate.SQL                        : 
+    select
+        count(*) 
+    from
+        users u1_0
+Hibernate: 
+    select
+        count(*) 
+    from
+        users u1_0
+2026-04-22T20:49:09.377+05:30 DEBUG 13840 --- [samrat] [           main] o.s.orm.jpa.JpaTransactionManager        : Initiating transaction commit
+2026-04-22T20:49:09.378+05:30 DEBUG 13840 --- [samrat] [           main] o.s.orm.jpa.JpaTransactionManager        : Committing JPA transaction on EntityManager [SessionImpl(2076344190<open>)]
+2026-04-22T20:49:09.379+05:30 DEBUG 13840 --- [samrat] [           main] o.s.orm.jpa.JpaTransactionManager        : Closing JPA EntityManager [SessionImpl(2076344190<open>)] after transaction
+Java HotSpot(TM) 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 9.190 s -- in com.example.samrat.SamratApplicationTests
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  13.583 s
+[INFO] Finished at: 2026-04-22T20:49:09+05:30
+[INFO] ------------------------------------------------------------------------

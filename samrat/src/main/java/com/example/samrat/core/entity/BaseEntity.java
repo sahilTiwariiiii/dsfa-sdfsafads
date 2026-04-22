@@ -45,4 +45,14 @@ public abstract class BaseEntity {
 
     @Column(name = "is_deleted", nullable = false)
     private boolean deleted = false;
+
+    @PrePersist
+    public void prePersist() {
+        if (this.hospitalId == null) {
+            this.hospitalId = com.example.samrat.core.context.TenantContext.getHospitalId();
+        }
+        if (this.branchId == null) {
+            this.branchId = com.example.samrat.core.context.TenantContext.getBranchId();
+        }
+    }
 }
