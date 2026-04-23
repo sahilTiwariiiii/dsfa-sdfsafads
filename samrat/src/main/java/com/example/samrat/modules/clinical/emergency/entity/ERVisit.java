@@ -23,6 +23,10 @@ public class ERVisit extends BaseEntity {
     @JoinColumn(name = "assigned_doctor_id")
     private Doctor assignedDoctor;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "department_id")
+    private com.example.samrat.modules.admin.entity.Department department;
+
     @Column(nullable = false)
     private LocalDateTime arrivalTime;
 

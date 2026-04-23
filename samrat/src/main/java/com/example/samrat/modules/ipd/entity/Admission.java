@@ -28,8 +28,15 @@ public class Admission extends BaseEntity {
     private Doctor primaryDoctor;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "department_id")
+    private com.example.samrat.modules.admin.entity.Department department;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bed_id", nullable = false)
     private Bed bed;
+
+    @Column(nullable = false, unique = true)
+    private String ipdNumber;
 
     @Column(nullable = false)
     private LocalDateTime admissionDate;
@@ -39,6 +46,16 @@ public class Admission extends BaseEntity {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private AdmissionStatus status = AdmissionStatus.ADMITTED;
+
+    private String caseType; // MLC, NORMAL
+    private String triage;   // RED, YELLOW, GREEN
+    
+    private String guardianName;
+    private String guardianPhone;
+    private String guardianRelation;
+    
+    private String policyNumber;
+    private String insuranceProvider;
 
     private String diagnosis;
     private String admissionReason;

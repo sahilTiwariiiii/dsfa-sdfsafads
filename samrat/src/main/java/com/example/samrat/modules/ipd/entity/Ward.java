@@ -21,6 +21,10 @@ public class Ward extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private WardType type; // ICU, GENERAL, SEMI_PRIVATE, PRIVATE, EMERGENCY
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "department_id")
+    private com.example.samrat.modules.admin.entity.Department department;
+
     private int capacity;
     private boolean active = true;
 

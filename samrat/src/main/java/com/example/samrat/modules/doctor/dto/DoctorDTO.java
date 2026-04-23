@@ -27,7 +27,16 @@ public class DoctorDTO {
     @NotNull(message = "Consultation fee is required")
     private Double consultationFee;
 
+    private Long departmentId;
+    private String departmentName;
+
     private boolean available = true;
 
     private String fullName; // From user
+    private String email;    // From user
+    private String phoneNumber; // From user
+
+    private String biography;
+    private String profileImage;
+    private String signatureImage;
 }

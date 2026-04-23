@@ -21,6 +21,10 @@ public class EMRRecord extends BaseEntity {
     @JoinColumn(name = "doctor_id", nullable = false)
     private Doctor doctor;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "department_id")
+    private com.example.samrat.modules.admin.entity.Department department;
+
     @Column(columnDefinition = "TEXT")
     private String chiefComplaint;
 

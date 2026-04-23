@@ -20,10 +20,10 @@ public class Doctor extends BaseEntity {
     private User user;
 
     @Column(nullable = false)
-    private String specialization; // or use a separate entity
+    private String specialization;
 
     private String qualification;
-    private String experience; // e.g., "10 years"
+    private String experience;
 
     @Column(nullable = false)
     private String registrationNumber;
@@ -31,10 +31,17 @@ public class Doctor extends BaseEntity {
     @Column(nullable = false)
     private Double consultationFee;
 
-    @Column(name = "department_id")
-    private Long departmentId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "department_id")
+    private com.example.samrat.modules.admin.entity.Department department;
 
     private boolean available = true;
+
+    @Column(columnDefinition = "TEXT")
+    private String biography;
+
+    private String profileImage;
+    private String signatureImage;
 
     // Doctor can work in multiple branches of the same hospital
     @ManyToMany(fetch = FetchType.LAZY)

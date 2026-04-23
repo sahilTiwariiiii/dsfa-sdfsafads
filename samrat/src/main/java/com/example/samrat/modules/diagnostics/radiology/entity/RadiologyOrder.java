@@ -23,6 +23,13 @@ public class RadiologyOrder extends BaseEntity {
     @JoinColumn(name = "ordering_doctor_id", nullable = false)
     private Doctor orderingDoctor;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "department_id")
+    private com.example.samrat.modules.admin.entity.Department department;
+
+    @Column(nullable = false, unique = true)
+    private String orderNumber;
+
     @Column(nullable = false)
     private String modality; // MRI, CT, X-RAY, ULTRASOUND
 

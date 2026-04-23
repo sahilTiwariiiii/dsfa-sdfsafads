@@ -39,10 +39,11 @@ public class OTBooking extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private OTStatus status = OTStatus.SCHEDULED;
 
-    private String notes;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "department_id")
+    private com.example.samrat.modules.admin.entity.Department department;
 
-    @Column(name = "department_id")
-    private Long departmentId;
+    private String notes;
 
     @Column(name = "video_recording_url")
     private String videoRecordingUrl;

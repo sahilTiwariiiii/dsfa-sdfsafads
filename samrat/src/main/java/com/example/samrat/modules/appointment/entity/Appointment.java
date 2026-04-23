@@ -1,6 +1,7 @@
 package com.example.samrat.modules.appointment.entity;
 
 import com.example.samrat.core.entity.BaseEntity;
+import com.example.samrat.modules.admin.entity.Department;
 import com.example.samrat.modules.doctor.entity.Doctor;
 import com.example.samrat.modules.patient.entity.Patient;
 import jakarta.persistence.*;
@@ -24,6 +25,10 @@ public class Appointment extends BaseEntity {
     @JoinColumn(name = "doctor_id", nullable = false)
     private Doctor doctor;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "department_id")
+    private Department department;
+
     @Column(nullable = false)
     private LocalDate appointmentDate;
 
@@ -37,14 +42,28 @@ public class Appointment extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private AppointmentStatus status = AppointmentStatus.PENDING;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private AppointmentPriority priority = AppointmentPriority.NORMAL;
+
     private String chiefComplaint; // Reason for visit
 
     @Column(nullable = false)
     private String visitType; // OPD, EMERGENCY, FOLLOW_UP
 
+    private String source; // Walk-in, Online, Phone
+
     private boolean isBilled = false;
+
+    private String notes;
+
+    private String cancellationReason;
 
     public enum AppointmentStatus {
         PENDING, CONFIRMED, CANCELLED, COMPLETED, NO_SHOW, IN_CONSULTATION
+    }
+
+    public enum AppointmentPriority {
+        NORMAL, URGENT, EMERGENCY
     }
 }

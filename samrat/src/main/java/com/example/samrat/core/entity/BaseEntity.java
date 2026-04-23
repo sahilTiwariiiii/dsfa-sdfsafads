@@ -1,5 +1,6 @@
 package com.example.samrat.core.entity;
 
+import com.example.samrat.core.context.TenantContext;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -49,10 +50,10 @@ public abstract class BaseEntity {
     @PrePersist
     public void prePersist() {
         if (this.hospitalId == null) {
-            this.hospitalId = com.example.samrat.core.context.TenantContext.getHospitalId();
+            this.hospitalId = TenantContext.getHospitalId();
         }
         if (this.branchId == null) {
-            this.branchId = com.example.samrat.core.context.TenantContext.getBranchId();
+            this.branchId = TenantContext.getBranchId();
         }
     }
 }

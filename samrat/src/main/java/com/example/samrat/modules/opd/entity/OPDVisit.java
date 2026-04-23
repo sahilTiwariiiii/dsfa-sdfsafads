@@ -28,6 +28,10 @@ public class OPDVisit extends BaseEntity {
     @JoinColumn(name = "doctor_id", nullable = false)
     private Doctor doctor;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "department_id")
+    private com.example.samrat.modules.admin.entity.Department department;
+
     @Column(nullable = false)
     private LocalDateTime visitTime;
 
@@ -38,18 +42,26 @@ public class OPDVisit extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private VisitStatus status = VisitStatus.WAITING;
 
+    private String visitType; // OPD, Emergency, Routine
+    private String slot;      // Slot I, II, III
+    private Double fee;
+    private String paymentMode; // Cash, Card, UPI, Insurance
+    private Double discountPercent;
+
     // Vital signs recorded during OPD visit
     private Double weight;
     private Double height;
-    private Double bloodPressure;
+    private String bloodPressure;
     private Double temperature;
-    private Double pulseRate;
-    private Double respiratoryRate;
-    private Double spo2;
+    private Integer pulseRate;
+    private Integer respiratoryRate;
+    private Integer spo2;
 
+    private String source; // Walk-in, Online, Phone
+    private String remark;
     private String notes;
 
     public enum VisitStatus {
-        WAITING, IN_PROGRESS, COMPLETED, CANCELLED
+        WAITING, CALLED, IN_CONSULTATION, COMPLETED, NO_SHOW, CANCELLED
     }
 }

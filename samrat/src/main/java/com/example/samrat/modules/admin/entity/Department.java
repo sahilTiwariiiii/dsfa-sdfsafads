@@ -15,13 +15,21 @@ public class Department extends BaseEntity {
     private String name;
 
     @Column(nullable = false, unique = true)
-    private String code; // e.g., CARD-01
+    private String code;
 
     private String description;
 
     @Column(nullable = false)
     private boolean active = true;
 
-    // A department belongs to a specific branch of a hospital
-    // Already inherits hospitalId and branchId from BaseEntity
+    private String headOfDepartment;
+    private String location; // e.g., "Building A, Floor 2"
+    private String contactNumber;
+    private String email;
+
+    @Column(name = "total_beds")
+    private Integer totalBeds;
+
+    @Column(name = "available_beds")
+    private Integer availableBeds;
 }

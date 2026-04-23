@@ -34,6 +34,17 @@ public class Patient extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String uhid; // Unique Health ID
 
+    private String maritalStatus;
+    private String bloodGroup;
+    private String guardianName;
+    private String guardianPhone;
+    private String emergencyContactName;
+    private String emergencyContactPhone;
+    private String occupation;
+    private String religion;
+    private String nationality;
+    private String patientImage;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "family_head_id")
     private Patient familyHead; // For family mapping
@@ -42,4 +53,8 @@ public class Patient extends BaseEntity {
 
     @Column(nullable = false)
     private boolean active = true;
+
+    public String getFullName() {
+        return firstName + " " + lastName;
+    }
 }

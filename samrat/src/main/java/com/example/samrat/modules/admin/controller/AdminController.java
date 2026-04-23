@@ -10,11 +10,12 @@ import com.example.samrat.modules.admin.repository.UserRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -30,9 +31,26 @@ public class AdminController {
 
     @GetMapping("/users")
     @PreAuthorize("hasAuthority('ADMIN_READ')")
-    @Operation(summary = "Get all users", description = "Retrieves all user accounts in the hospital system")
-    public ResponseEntity<BaseResponse<List<User>>> getAllUsers() {
-        return ResponseEntity.ok(new BaseResponse<>(true, "Users found", null, userRepository.findAll()));
+    @Operation(summary = "Get all users (paginated)", description = "Retrieves a paginated list of all user accounts")
+    public ResponseEntity<BaseResponse<Page<User>>> getAllUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(new BaseResponse<>(true, "Users found", null, userRepository.findAll(pageable)));
+    }
+
+    @GetMapping("/users/search")
+    @PreAuthorize("hasAuthority('ADMIN_READ')")
+    @Operation(summary = "Search users", description = "Filters users by username, full name, email, and active status")
+    public ResponseEntity<BaseResponse<Page<User>>> searchUsers(
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) String fullName,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) Boolean active,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(new BaseResponse<>(true, "Search results found", null, userRepository.searchUsers(username, fullName, email, active, pageable)));
     }
 
     @GetMapping("/roles")
