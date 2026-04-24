@@ -39,28 +39,34 @@ public class DiagnosticsController {
     @PostMapping("/lab")
     @Tag(name = "V1 - labRoute")
     @Operation(summary = "Create V1 - labRoute")
-    public ResponseEntity<BaseResponse<LabOrder>> createLabV1(@RequestBody LabOrder order) {
-        return ResponseEntity.status(201).body(new BaseResponse<>(true, "Created", null, order));
+    public ResponseEntity<BaseResponse<LabOrder>> createLabV1(
+            @RequestBody LabOrder order,
+            @RequestParam Long patientId,
+            @RequestParam Long doctorId,
+            @RequestParam(required = false) Long departmentId) {
+        LabOrder created = diagnosticsService.createLabOrder(order, patientId, doctorId, departmentId);
+        return ResponseEntity.status(201).body(new BaseResponse<>(true, "Created", null, created));
     }
 
     @GetMapping("/lab/{id}")
     @Tag(name = "V1 - labRoute")
     @Operation(summary = "Get V1 - labRoute by ID")
     public ResponseEntity<BaseResponse<LabOrder>> getLabByIdV1(@PathVariable Long id) {
-        return ResponseEntity.ok(new BaseResponse<>(true, "Detail", null, null));
+        return ResponseEntity.ok(new BaseResponse<>(true, "Detail", null, diagnosticsService.getLabOrderById(id)));
     }
 
     @PutMapping("/lab/{id}")
     @Tag(name = "V1 - labRoute")
     @Operation(summary = "Update V1 - labRoute")
     public ResponseEntity<BaseResponse<LabOrder>> updateLabV1(@PathVariable Long id, @RequestBody LabOrder order) {
-        return ResponseEntity.ok(new BaseResponse<>(true, "Updated", null, order));
+        return ResponseEntity.ok(new BaseResponse<>(true, "Updated", null, diagnosticsService.updateLabResult(id, order.getResult(), order.getRemarks())));
     }
 
     @DeleteMapping("/lab/{id}")
     @Tag(name = "V1 - labRoute")
     @Operation(summary = "Delete V1 - labRoute")
     public ResponseEntity<BaseResponse<Void>> deleteLabV1(@PathVariable Long id) {
+        diagnosticsService.deleteLabOrder(id);
         return ResponseEntity.ok(new BaseResponse<>(true, "Deleted", null, null));
     }
 
@@ -79,28 +85,34 @@ public class DiagnosticsController {
     @PostMapping("/radiology")
     @Tag(name = "V1 - radiologyRoute")
     @Operation(summary = "Create V1 - radiologyRoute")
-    public ResponseEntity<BaseResponse<RadiologyOrder>> createRadiologyV1(@RequestBody RadiologyOrder order) {
-        return ResponseEntity.status(201).body(new BaseResponse<>(true, "Created", null, order));
+    public ResponseEntity<BaseResponse<RadiologyOrder>> createRadiologyV1(
+            @RequestBody RadiologyOrder order,
+            @RequestParam Long patientId,
+            @RequestParam Long doctorId,
+            @RequestParam(required = false) Long departmentId) {
+        RadiologyOrder created = diagnosticsService.createRadiologyOrder(order, patientId, doctorId, departmentId);
+        return ResponseEntity.status(201).body(new BaseResponse<>(true, "Created", null, created));
     }
 
     @GetMapping("/radiology/{id}")
     @Tag(name = "V1 - radiologyRoute")
     @Operation(summary = "Get V1 - radiologyRoute by ID")
     public ResponseEntity<BaseResponse<RadiologyOrder>> getRadiologyByIdV1(@PathVariable Long id) {
-        return ResponseEntity.ok(new BaseResponse<>(true, "Detail", null, null));
+        return ResponseEntity.ok(new BaseResponse<>(true, "Detail", null, diagnosticsService.getRadiologyOrderById(id)));
     }
 
     @PutMapping("/radiology/{id}")
     @Tag(name = "V1 - radiologyRoute")
     @Operation(summary = "Update V1 - radiologyRoute")
     public ResponseEntity<BaseResponse<RadiologyOrder>> updateRadiologyV1(@PathVariable Long id, @RequestBody RadiologyOrder order) {
-        return ResponseEntity.ok(new BaseResponse<>(true, "Updated", null, order));
+        return ResponseEntity.ok(new BaseResponse<>(true, "Updated", null, diagnosticsService.updateRadiologyReport(id, order.getReport(), order.getImpression())));
     }
 
     @DeleteMapping("/radiology/{id}")
     @Tag(name = "V1 - radiologyRoute")
     @Operation(summary = "Delete V1 - radiologyRoute")
     public ResponseEntity<BaseResponse<Void>> deleteRadiologyV1(@PathVariable Long id) {
+        diagnosticsService.deleteRadiologyOrder(id);
         return ResponseEntity.ok(new BaseResponse<>(true, "Deleted", null, null));
     }
 

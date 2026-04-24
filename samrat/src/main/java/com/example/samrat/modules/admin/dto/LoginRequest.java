@@ -11,10 +11,9 @@ import lombok.Setter;
 @Schema(description = "Request body for user login")
 public class LoginRequest {
 
-    @NotBlank(message = "Email is required")
-    @Email(message = "Invalid email format")
-    @Schema(description = "User email address", example = "user@example.com")
-    private String email;
+    @NotBlank(message = "Username is required")
+    @Schema(description = "User username", example = "johndoe")
+    private String username;
 
     @NotBlank(message = "Password is required")
     @Schema(description = "User password", example = "password_value")

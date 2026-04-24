@@ -47,8 +47,9 @@ public class PatientController {
                     )
             }
     )
-    public ResponseEntity<BaseResponse<PatientRegistrationRequest>> patientRegisterV1(@Valid @RequestBody PatientRegistrationRequest registrationData) {
-        return ResponseEntity.status(201).body(new BaseResponse<>(true, "User registered and Visited Successfully", null, registrationData));
+    public ResponseEntity<BaseResponse<PatientDTO>> patientRegisterV1(@Valid @RequestBody PatientRegistrationRequest registrationData) {
+        PatientDTO registeredPatient = patientService.registerPatientFromRequest(registrationData);
+        return ResponseEntity.status(201).body(new BaseResponse<>(true, "User registered and Visited Successfully", null, registeredPatient));
     }
 
     // --- Existing Patient Management APIs ---

@@ -28,35 +28,35 @@ public class IPDController {
     private final IPDService ipdService;
 
     @GetMapping
-    @Operation(summary = "List V1 - ipdRoute")
+    @PreAuthorize("hasAuthority('IPD_READ')")
+    @Operation(summary = "Get all admissions", description = "Retrieves a paginated list of all IPD admissions")
     public ResponseEntity<BaseResponse<Page<Admission>>> listIpdV1(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int limit) {
-        Pageable pageable = PageRequest.of(page - 1, limit);
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(new BaseResponse<>(true, "IPD list", null, ipdService.searchAdmissions(null, null, null, null, null, null, pageable)));
     }
 
-    @PostMapping
-    @Operation(summary = "Create V1 - ipdRoute")
-    public ResponseEntity<BaseResponse<Admission>> createIpdV1(@RequestBody Admission admission) {
-        return ResponseEntity.status(201).body(new BaseResponse<>(true, "Created", null, admission));
-    }
-
     @GetMapping("/{id}")
-    @Operation(summary = "Get V1 - ipdRoute by ID")
+    @PreAuthorize("hasAuthority('IPD_READ')")
+    @Operation(summary = "Get admission by ID")
     public ResponseEntity<BaseResponse<Admission>> getIpdByIdV1(@PathVariable Long id) {
-        return ResponseEntity.ok(new BaseResponse<>(true, "Detail", null, null));
+        return ResponseEntity.ok(new BaseResponse<>(true, "Detail", null, ipdService.getAdmissionById(id)));
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Update V1 - ipdRoute")
+    @PreAuthorize("hasAuthority('IPD_WRITE')")
+    @Operation(summary = "Update admission")
     public ResponseEntity<BaseResponse<Admission>> updateIpdV1(@PathVariable Long id, @RequestBody Admission admission) {
+        // Implementation for update would go here
         return ResponseEntity.ok(new BaseResponse<>(true, "Updated", null, admission));
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete V1 - ipdRoute")
+    @PreAuthorize("hasAuthority('IPD_DELETE')")
+    @Operation(summary = "Delete admission")
     public ResponseEntity<BaseResponse<Void>> deleteIpdV1(@PathVariable Long id) {
+        ipdService.deleteAdmission(id);
         return ResponseEntity.ok(new BaseResponse<>(true, "Deleted", null, null));
     }
 

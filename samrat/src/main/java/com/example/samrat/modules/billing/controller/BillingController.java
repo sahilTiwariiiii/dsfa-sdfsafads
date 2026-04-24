@@ -26,35 +26,35 @@ public class BillingController {
     private final BillingService billingService;
 
     @GetMapping
-    @Operation(summary = "List V1 - billingRoute")
+    @PreAuthorize("hasAuthority('BILLING_READ')")
+    @Operation(summary = "Get all invoices", description = "Retrieves a paginated list of all invoices")
     public ResponseEntity<BaseResponse<Page<Invoice>>> listBillingV1(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int limit) {
-        Pageable pageable = PageRequest.of(page - 1, limit);
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(new BaseResponse<>(true, "Billing list", null, billingService.searchInvoices(null, null, null, null, null, pageable)));
     }
 
-    @PostMapping
-    @Operation(summary = "Create V1 - billingRoute")
-    public ResponseEntity<BaseResponse<Invoice>> createBillingV1(@RequestBody Invoice invoice) {
-        return ResponseEntity.status(201).body(new BaseResponse<>(true, "Created", null, invoice));
-    }
-
     @GetMapping("/{id}")
-    @Operation(summary = "Get V1 - billingRoute by ID")
+    @PreAuthorize("hasAuthority('BILLING_READ')")
+    @Operation(summary = "Get invoice by ID")
     public ResponseEntity<BaseResponse<Invoice>> getBillingByIdV1(@PathVariable Long id) {
-        return ResponseEntity.ok(new BaseResponse<>(true, "Detail", null, null));
+        return ResponseEntity.ok(new BaseResponse<>(true, "Detail", null, billingService.getInvoiceById(id)));
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Update V1 - billingRoute")
+    @PreAuthorize("hasAuthority('BILLING_WRITE')")
+    @Operation(summary = "Update invoice")
     public ResponseEntity<BaseResponse<Invoice>> updateBillingV1(@PathVariable Long id, @RequestBody Invoice invoice) {
+        // Implementation for update would go here
         return ResponseEntity.ok(new BaseResponse<>(true, "Updated", null, invoice));
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete V1 - billingRoute")
+    @PreAuthorize("hasAuthority('BILLING_DELETE')")
+    @Operation(summary = "Delete invoice")
     public ResponseEntity<BaseResponse<Void>> deleteBillingV1(@PathVariable Long id) {
+        billingService.deleteInvoice(id);
         return ResponseEntity.ok(new BaseResponse<>(true, "Deleted", null, null));
     }
 

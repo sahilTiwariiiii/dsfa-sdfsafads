@@ -107,6 +107,15 @@ public class IPDService {
         return admissionRepository.searchAdmissions(TenantContext.getHospitalId(), TenantContext.getBranchId(), patientId, doctorId, departmentId, admissionStatus, start, end, pageable);
     }
 
+    public Admission getAdmissionById(Long id) {
+        return admissionRepository.findById(id).orElseThrow(() -> new RuntimeException("Admission not found"));
+    }
+
+    @Transactional
+    public void deleteAdmission(Long id) {
+        admissionRepository.deleteById(id);
+    }
+
     @Transactional
     public Admission dischargePatient(Long admissionId) {
         Admission admission = admissionRepository.findById(admissionId)

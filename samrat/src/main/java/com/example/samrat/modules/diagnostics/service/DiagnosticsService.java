@@ -50,6 +50,15 @@ public class DiagnosticsService {
         return labOrderRepository.searchLabOrders(TenantContext.getHospitalId(), TenantContext.getBranchId(), patientId, doctorId, labStatus, start, end, pageable);
     }
 
+    public LabOrder getLabOrderById(Long id) {
+        return labOrderRepository.findById(id).orElseThrow(() -> new RuntimeException("Lab order not found"));
+    }
+
+    @Transactional
+    public void deleteLabOrder(Long id) {
+        labOrderRepository.deleteById(id);
+    }
+
     @Transactional
     public LabOrder updateLabResult(Long orderId, String result, String remarks) {
         LabOrder order = labOrderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Lab order not found"));
@@ -80,6 +89,15 @@ public class DiagnosticsService {
     public Page<RadiologyOrder> searchRadiologyOrders(Long patientId, Long doctorId, String status, LocalDateTime start, LocalDateTime end, Pageable pageable) {
         RadiologyOrder.RadiologyStatus radStatus = status != null ? RadiologyOrder.RadiologyStatus.valueOf(status.toUpperCase()) : null;
         return radiologyOrderRepository.searchRadiologyOrders(TenantContext.getHospitalId(), TenantContext.getBranchId(), patientId, doctorId, radStatus, start, end, pageable);
+    }
+
+    public RadiologyOrder getRadiologyOrderById(Long id) {
+        return radiologyOrderRepository.findById(id).orElseThrow(() -> new RuntimeException("Radiology order not found"));
+    }
+
+    @Transactional
+    public void deleteRadiologyOrder(Long id) {
+        radiologyOrderRepository.deleteById(id);
     }
 
     @Transactional

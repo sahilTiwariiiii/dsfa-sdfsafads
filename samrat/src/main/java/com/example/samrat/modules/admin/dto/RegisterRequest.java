@@ -26,6 +26,10 @@ public class RegisterRequest {
     @Schema(description = "User password", example = "securePassword123")
     private String password;
 
+    @NotBlank(message = "Full name is required")
+    @Schema(description = "Full name of the user", example = "John Doe")
+    private String fullName;
+
     @Schema(description = "Set of roles for the user", example = "[\"ROLE_USER\"]")
     private Set<String> roles;
 }

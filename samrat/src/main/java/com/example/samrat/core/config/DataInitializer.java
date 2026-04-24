@@ -25,32 +25,33 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-        if (userRepository.count() == 0) {
-            createInitialData();
-        }
+        createInitialData();
     }
 
     private void createInitialData() {
-        // 1. Create Default Hospital
-        Hospital hospital = new Hospital();
-        hospital.setName("Samrat General Hospital");
-        hospital.setCode("SGH001");
-        hospital.setAddress("Main Road, City Center");
-        hospital.setPhone("0123456789");
-        hospital.setEmail("admin@samrathospital.com");
-        hospital = hospitalRepository.save(hospital);
+        // 1. Create Default Hospital if not exists
+        Hospital hospital = hospitalRepository.findAll().stream().findFirst().orElseGet(() -> {
+            Hospital h = new Hospital();
+            h.setName("Samrat General Hospital");
+            h.setCode("SGH001");
+            h.setAddress("Main Road, City Center");
+            h.setPhone("0123456789");
+            h.setEmail("admin@samrathospital.com");
+            return hospitalRepository.save(h);
+        });
 
-        // 2. Create Default Branch
-        Branch branch = new Branch();
-        branch.setName("Main Branch");
-        branch.setCode("SGH-MAIN");
-        branch.setHospital(hospital);
-        branch.setAddress("Main Road, City Center");
-        branch.setPhone("0123456789");
-        branch = branchRepository.save(branch);
+        // 2. Create Default Branch if not exists
+        Branch branch = branchRepository.findAll().stream().findFirst().orElseGet(() -> {
+            Branch b = new Branch();
+            b.setName("Main Branch");
+            b.setCode("SGH-MAIN");
+            b.setHospital(hospital);
+            b.setAddress("Main Road, City Center");
+            b.setPhone("0123456789");
+            return branchRepository.save(b);
+        });
 
-        // 3. Create Permissions
-        Set<Permission> allPermissions = new HashSet<>();
+        // 3. Create Permissions if they don't exist
         String[] permissionNames = {
             "SUPER_ADMIN", "ADMIN_READ", "ADMIN_WRITE",
             "PATIENT_READ", "PATIENT_WRITE", "PATIENT_CREATE",
@@ -68,44 +69,53 @@ public class DataInitializer implements CommandLineRunner {
         };
 
         for (String pName : permissionNames) {
-            Permission p = new Permission();
-            p.setName(pName);
-            p.setDescription("Access for " + pName);
-            allPermissions.add(permissionRepository.save(p));
+            if (permissionRepository.findByName(pName).isEmpty()) {
+                Permission p = new Permission();
+                p.setName(pName);
+                p.setDescription("Access for " + pName);
+                permissionRepository.save(p);
+            }
         }
 
-        // 4. Create Roles
-        createRole("SUPER_ADMIN", allPermissions);
-        createRole("DOCTOR", getPermissionsByNames(allPermissions, "DOCTOR_READ", "DOCTOR_WRITE", "PATIENT_READ", "EMR_READ", "EMR_WRITE", "APPOINTMENT_READ", "LAB_READ", "TELEMEDICINE_READ", "TELEMEDICINE_WRITE"));
-        createRole("NURSE", getPermissionsByNames(allPermissions, "NURSE_READ", "NURSE_WRITE", "PATIENT_READ", "EMR_READ", "EMR_WRITE", "LAB_READ"));
-        createRole("RECEPTIONIST", getPermissionsByNames(allPermissions, "RECEPTION_READ", "RECEPTION_WRITE", "PATIENT_READ", "PATIENT_CREATE", "APPOINTMENT_READ", "APPOINTMENT_WRITE", "BILLING_READ"));
-        createRole("PHARMACIST", getPermissionsByNames(allPermissions, "PHARMACY_READ", "PHARMACY_WRITE", "PATIENT_READ", "BILLING_READ"));
-        createRole("LAB_TECHNICIAN", getPermissionsByNames(allPermissions, "LAB_READ", "LAB_WRITE", "PATIENT_READ"));
+        Set<Permission> allPermissions = new HashSet<>(permissionRepository.findAll());
 
-        // 5. Create Super Admin User
-        Role superAdminRole = roleRepository.findByName("SUPER_ADMIN").orElseThrow();
-        User superAdmin = new User();
-        superAdmin.setUsername("superadmin");
-        superAdmin.setPassword(passwordEncoder.encode("admin123")); // Default password
-        superAdmin.setEmail("superadmin@samrathospital.com");
-        superAdmin.setFullName("System Super Administrator");
-        superAdmin.setHospitalId(hospital.getId());
-        superAdmin.setBranchId(branch.getId());
-        superAdmin.getRoles().add(superAdminRole);
-        
-        userRepository.save(superAdmin);
-        
-        System.out.println("----------------------------------------------------------");
-        System.out.println("HMS Initialized with full RBAC!");
-        System.out.println("Super Admin: superadmin / admin123");
-        System.out.println("----------------------------------------------------------");
+        // 4. Create Roles if they don't exist
+        ensureRoleExists("SUPER_ADMIN", allPermissions);
+        ensureRoleExists("DOCTOR", getPermissionsByNames(allPermissions, "DOCTOR_READ", "DOCTOR_WRITE", "PATIENT_READ", "EMR_READ", "EMR_WRITE", "APPOINTMENT_READ", "LAB_READ", "TELEMEDICINE_READ", "TELEMEDICINE_WRITE"));
+        ensureRoleExists("NURSE", getPermissionsByNames(allPermissions, "NURSE_READ", "NURSE_WRITE", "PATIENT_READ", "EMR_READ", "EMR_WRITE", "LAB_READ"));
+        ensureRoleExists("RECEPTIONIST", getPermissionsByNames(allPermissions, "RECEPTION_READ", "RECEPTION_WRITE", "PATIENT_READ", "PATIENT_CREATE", "APPOINTMENT_READ", "APPOINTMENT_WRITE", "BILLING_READ"));
+        ensureRoleExists("PHARMACIST", getPermissionsByNames(allPermissions, "PHARMACY_READ", "PHARMACY_WRITE", "PATIENT_READ", "BILLING_READ"));
+        ensureRoleExists("LAB_TECHNICIAN", getPermissionsByNames(allPermissions, "LAB_READ", "LAB_WRITE", "PATIENT_READ"));
+
+        // 5. Create Super Admin User if no users exist
+        if (userRepository.count() == 0) {
+            Role superAdminRole = roleRepository.findByName("SUPER_ADMIN").orElseThrow();
+            User superAdmin = new User();
+            superAdmin.setUsername("superadmin");
+            superAdmin.setPassword(passwordEncoder.encode("admin123")); // Default password
+            superAdmin.setEmail("superadmin@samrathospital.com");
+            superAdmin.setFullName("System Super Administrator");
+            superAdmin.setHospitalId(hospital.getId());
+            superAdmin.setBranchId(branch.getId());
+            superAdmin.getRoles().add(superAdminRole);
+            
+            userRepository.save(superAdmin);
+            
+            System.out.println("----------------------------------------------------------");
+            System.out.println(" Initialized with full RBAC!");
+            System.out.println("Super Admin: superadmin / admin123");
+            System.out.println("----------------------------------------------------------");
+        }
     }
 
-    private void createRole(String name, Set<Permission> permissions) {
-        Role role = new Role();
-        role.setName(name);
-        role.setPermissions(permissions);
-        roleRepository.save(role);
+    private void ensureRoleExists(String name, Set<Permission> permissions) {
+        if (roleRepository.findByName(name).isEmpty()) {
+            Role role = new Role();
+            role.setName(name);
+            role.setPermissions(permissions);
+            roleRepository.save(role);
+            System.out.println("Created Role: " + name);
+        }
     }
 
     private Set<Permission> getPermissionsByNames(Set<Permission> all, String... names) {

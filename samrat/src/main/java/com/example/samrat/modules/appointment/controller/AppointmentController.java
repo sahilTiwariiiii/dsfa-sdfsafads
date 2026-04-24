@@ -26,31 +26,13 @@ public class AppointmentController {
     private final AppointmentService appointmentService;
 
     @GetMapping
-    @Operation(summary = "List V1 - appointmentRoute")
+    @PreAuthorize("hasAuthority('APPOINTMENT_READ')")
+    @Operation(summary = "Get all appointments", description = "Retrieves a paginated list of all appointments")
     public ResponseEntity<BaseResponse<Page<Appointment>>> listAppointmentsV1(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int limit) {
-        Pageable pageable = PageRequest.of(page - 1, limit);
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(new BaseResponse<>(true, "Appointment list", null, appointmentService.searchAppointments(null, null, null, null, null, null, pageable)));
-    }
-
-    @PostMapping("/v1-create") // Changed to avoid conflict with existing @PostMapping
-    @Operation(summary = "Create V1 - appointmentRoute")
-    public ResponseEntity<BaseResponse<Appointment>> createAppointmentV1Generic(@RequestBody Appointment appointment) {
-        return ResponseEntity.status(201).body(new BaseResponse<>(true, "Created", null, appointment));
-    }
-
-    @PutMapping("/{id}")
-    @Operation(summary = "Update V1 - appointmentRoute")
-    public ResponseEntity<BaseResponse<Appointment>> updateAppointmentV1(@PathVariable Long id, @RequestBody Appointment appointment) {
-        return ResponseEntity.ok(new BaseResponse<>(true, "Updated", null, appointment));
-    }
-
-    @DeleteMapping("/{id}/v1-delete") // Changed to avoid conflict with existing @DeleteMapping
-    @Operation(summary = "Delete V1 - appointmentRoute")
-    public ResponseEntity<BaseResponse<Void>> deleteAppointmentV1(@PathVariable Long id) {
-        appointmentService.deleteAppointment(id);
-        return ResponseEntity.ok(new BaseResponse<>(true, "Deleted", null, null));
     }
 
     // --- Enterprise Appointment APIs (v1) ---
@@ -77,6 +59,22 @@ public class AppointmentController {
     public ResponseEntity<BaseResponse<Appointment>> getAppointmentById(@PathVariable Long id) {
         Appointment appointment = appointmentService.getAppointmentById(id);
         return ResponseEntity.ok(new BaseResponse<>(true, "Appointment found", null, appointment));
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('APPOINTMENT_UPDATE')")
+    @Operation(summary = "Update appointment", description = "Updates an existing appointment profile")
+    public ResponseEntity<BaseResponse<Appointment>> updateAppointmentV1(@PathVariable Long id, @RequestBody Appointment appointment) {
+        // Implementation for update would go here
+        return ResponseEntity.ok(new BaseResponse<>(true, "Updated", null, appointment));
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('APPOINTMENT_DELETE')")
+    @Operation(summary = "Delete appointment", description = "Deletes an appointment record")
+    public ResponseEntity<BaseResponse<Void>> deleteAppointment(@PathVariable Long id) {
+        appointmentService.deleteAppointment(id);
+        return ResponseEntity.ok(new BaseResponse<>(true, "Appointment deleted successfully", null, null));
     }
 
     @PatchMapping("/{id}/status")
@@ -141,13 +139,5 @@ public class AppointmentController {
         Pageable pageable = PageRequest.of(page, size);
         Page<Appointment> appointments = appointmentService.searchAppointments(patientId, doctorId, departmentId, startDate, endDate, status, pageable);
         return ResponseEntity.ok(new BaseResponse<>(true, "Search results found", null, appointments));
-    }
-
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('APPOINTMENT_DELETE')")
-    @Operation(summary = "Delete appointment", description = "Deletes an appointment record")
-    public ResponseEntity<BaseResponse<Void>> deleteAppointment(@PathVariable Long id) {
-        appointmentService.deleteAppointment(id);
-        return ResponseEntity.ok(new BaseResponse<>(true, "Appointment deleted successfully", null, null));
     }
 }

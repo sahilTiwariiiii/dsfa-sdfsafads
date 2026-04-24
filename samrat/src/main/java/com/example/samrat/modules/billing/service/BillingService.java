@@ -83,6 +83,15 @@ public class BillingService {
         return invoiceRepository.searchInvoices(TenantContext.getHospitalId(), TenantContext.getBranchId(), patientId, invoiceNumber, invoiceStatus, start, end, pageable);
     }
 
+    public Invoice getInvoiceById(Long id) {
+        return invoiceRepository.findById(id).orElseThrow(() -> new RuntimeException("Invoice not found"));
+    }
+
+    @Transactional
+    public void deleteInvoice(Long id) {
+        invoiceRepository.deleteById(id);
+    }
+
     @Transactional
     public Invoice updatePayment(Long invoiceId, Double amount, String method) {
         Invoice invoice = invoiceRepository.findById(invoiceId)
