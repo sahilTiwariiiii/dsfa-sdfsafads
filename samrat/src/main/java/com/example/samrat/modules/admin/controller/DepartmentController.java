@@ -1,10 +1,12 @@
 package com.example.samrat.modules.admin.controller;
 
 import com.example.samrat.core.dto.BaseResponse;
+import com.example.samrat.modules.admin.dto.DepartmentCreateRequest;
 import com.example.samrat.modules.admin.entity.Department;
 import com.example.samrat.modules.admin.service.DepartmentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,9 +27,9 @@ public class DepartmentController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('ADMIN_WRITE')")
-    @Operation(summary = "Create department", description = "Adds a new department to the hospital branch")
-    public ResponseEntity<BaseResponse<Department>> createDepartment(@RequestBody Department department) {
-        Department createdDepartment = departmentService.createDepartment(department);
+    @Operation(summary = "Create department", description = "Adds a new department to the hospital branch. Only `name` is required; `code` is auto-generated if omitted.")
+    public ResponseEntity<BaseResponse<Department>> createDepartment(@Valid @RequestBody DepartmentCreateRequest request) {
+        Department createdDepartment = departmentService.createDepartment(request);
         return ResponseEntity.ok(new BaseResponse<>(true, "Department created successfully", null, createdDepartment));
     }
 

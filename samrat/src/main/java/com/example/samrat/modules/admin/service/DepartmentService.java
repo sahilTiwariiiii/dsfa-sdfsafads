@@ -1,6 +1,7 @@
 package com.example.samrat.modules.admin.service;
 
 import com.example.samrat.core.context.TenantContext;
+import com.example.samrat.modules.admin.dto.DepartmentCreateRequest;
 import com.example.samrat.modules.admin.entity.Department;
 import com.example.samrat.modules.admin.repository.DepartmentRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +19,22 @@ public class DepartmentService {
     private final DepartmentRepository departmentRepository;
 
     @Transactional
-    public Department createDepartment(Department department) {
+    public Department createDepartment(DepartmentCreateRequest request) {
+        Department department = new Department();
         department.setHospitalId(TenantContext.getHospitalId());
         department.setBranchId(TenantContext.getBranchId());
+
+        department.setName(request.getName());
+        department.setCode(resolveDepartmentCode(request.getCode(), request.getName()));
+        department.setDescription(request.getDescription());
+        department.setActive(true);
+        department.setHeadOfDepartment(request.getHeadOfDepartment());
+        department.setLocation(request.getLocation());
+        department.setContactNumber(request.getContactNumber());
+        department.setEmail(request.getEmail());
+        department.setTotalBeds(request.getTotalBeds());
+        department.setAvailableBeds(request.getAvailableBeds());
+
         return departmentRepository.save(department);
     }
 
@@ -59,7 +73,9 @@ public class DepartmentService {
     public Department updateDepartment(Long id, Department departmentDetails) {
         Department department = getDepartmentById(id);
         department.setName(departmentDetails.getName());
-        department.setCode(departmentDetails.getCode());
+        if (departmentDetails.getCode() != null && !departmentDetails.getCode().isBlank()) {
+            department.setCode(departmentDetails.getCode());
+        }
         department.setDescription(departmentDetails.getDescription());
         department.setActive(departmentDetails.isActive());
         department.setHeadOfDepartment(departmentDetails.getHeadOfDepartment());
@@ -74,5 +90,37 @@ public class DepartmentService {
     @Transactional
     public void deleteDepartment(Long id) {
         departmentRepository.deleteById(id);
+    }
+
+    private String resolveDepartmentCode(String requestedCode, String name) {
+        String base = (requestedCode != null && !requestedCode.isBlank())
+                ? requestedCode.trim()
+                : slugToCode(name);
+
+        String hospitalId = String.valueOf(TenantContext.getHospitalId());
+        String branchId = String.valueOf(TenantContext.getBranchId());
+
+        // ensure uniqueness within tenant+branch
+        String candidate = base;
+        int attempt = 1;
+        while (departmentRepository.existsByHospitalIdAndBranchIdAndCode(TenantContext.getHospitalId(), TenantContext.getBranchId(), candidate)) {
+            candidate = base + "-" + attempt;
+            attempt++;
+        }
+
+        // also avoid accidental empty codes
+        if (candidate.isBlank()) {
+            candidate = "DEPT-" + hospitalId + "-" + branchId;
+        }
+        return candidate;
+    }
+
+    private String slugToCode(String input) {
+        if (input == null) return "DEPT";
+        String cleaned = input.trim().toUpperCase().replaceAll("[^A-Z0-9]+", "-");
+        cleaned = cleaned.replaceAll("(^-+|-+$)", "");
+        if (cleaned.isBlank()) return "DEPT";
+        // keep codes short-ish
+        return cleaned.length() > 16 ? cleaned.substring(0, 16) : cleaned;
     }
 }

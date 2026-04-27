@@ -1,6 +1,7 @@
 package com.example.samrat.modules.opd.controller;
 
 import com.example.samrat.core.dto.BaseResponse;
+import com.example.samrat.modules.opd.dto.OPDVisitDTO;
 import com.example.samrat.modules.opd.entity.OPDVisit;
 import com.example.samrat.modules.opd.service.OPDVisitService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,40 +30,40 @@ public class OPDController {
     @PostMapping("/check-in/{appointmentId}")
     @PreAuthorize("hasAuthority('OPD_WRITE')")
     @Operation(summary = "Check-in patient from appointment", description = "Checks in a patient for their scheduled OPD appointment")
-    public ResponseEntity<BaseResponse<OPDVisit>> checkIn(@PathVariable Long appointmentId) {
-        OPDVisit visit = opdVisitService.checkIn(appointmentId);
+    public ResponseEntity<BaseResponse<OPDVisitDTO>> checkIn(@PathVariable Long appointmentId) {
+        OPDVisitDTO visit = opdVisitService.checkIn(appointmentId);
         return ResponseEntity.ok(new BaseResponse<>(true, "Patient checked in successfully", null, visit));
     }
 
     @PostMapping("/walk-in")
     @PreAuthorize("hasAuthority('OPD_WRITE')")
     @Operation(summary = "Register walk-in visit", description = "Registers a new walk-in visit for a patient")
-    public ResponseEntity<BaseResponse<OPDVisit>> registerWalkIn(
+    public ResponseEntity<BaseResponse<OPDVisitDTO>> registerWalkIn(
             @RequestParam Long patientId,
             @RequestParam Long doctorId,
             @RequestParam(required = false) Long departmentId,
             @RequestParam String visitType,
             @RequestParam String slot,
             @RequestParam Double fee) {
-        OPDVisit visit = opdVisitService.registerWalkInVisit(patientId, doctorId, departmentId, visitType, slot, fee);
+        OPDVisitDTO visit = opdVisitService.registerWalkInVisit(patientId, doctorId, departmentId, visitType, slot, fee);
         return ResponseEntity.ok(new BaseResponse<>(true, "Walk-in visit registered successfully", null, visit));
     }
 
     @GetMapping
     @PreAuthorize("hasAuthority('OPD_READ')")
     @Operation(summary = "Get all OPD visits", description = "Retrieves a paginated list of all OPD visits")
-    public ResponseEntity<BaseResponse<Page<OPDVisit>>> getAllVisits(
+    public ResponseEntity<BaseResponse<Page<OPDVisitDTO>>> getAllVisits(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<OPDVisit> visits = opdVisitService.getAllVisits(pageable);
+        Page<OPDVisitDTO> visits = opdVisitService.getAllVisits(pageable);
         return ResponseEntity.ok(new BaseResponse<>(true, "Visits retrieved successfully", null, visits));
     }
 
     @GetMapping("/search")
     @PreAuthorize("hasAuthority('OPD_READ')")
     @Operation(summary = "Search OPD visits", description = "Filters OPD visits by patient, doctor, department, status, and date range")
-    public ResponseEntity<BaseResponse<Page<OPDVisit>>> searchVisits(
+    public ResponseEntity<BaseResponse<Page<OPDVisitDTO>>> searchVisits(
             @RequestParam(required = false) Long patientId,
             @RequestParam(required = false) Long doctorId,
             @RequestParam(required = false) Long departmentId,
@@ -72,22 +73,22 @@ public class OPDController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<OPDVisit> visits = opdVisitService.searchVisits(patientId, doctorId, departmentId, status, start, end, pageable);
+        Page<OPDVisitDTO> visits = opdVisitService.searchVisits(patientId, doctorId, departmentId, status, start, end, pageable);
         return ResponseEntity.ok(new BaseResponse<>(true, "Search results found", null, visits));
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('OPD_READ')")
     @Operation(summary = "Get OPD visit by ID", description = "Retrieves details of a specific OPD visit")
-    public ResponseEntity<BaseResponse<OPDVisit>> getVisitById(@PathVariable Long id) {
-        OPDVisit visit = opdVisitService.getVisitById(id);
+    public ResponseEntity<BaseResponse<OPDVisitDTO>> getVisitById(@PathVariable Long id) {
+        OPDVisitDTO visit = opdVisitService.getVisitById(id);
         return ResponseEntity.ok(new BaseResponse<>(true, "Visit found", null, visit));
     }
 
     @PostMapping("/vitals/{opdVisitId}")
     @PreAuthorize("hasAuthority('OPD_WRITE')")
     @Operation(summary = "Record vitals", description = "Records patient vitals like weight, height, BP, temp, pulse, respiratory rate, and SpO2")
-    public ResponseEntity<BaseResponse<OPDVisit>> recordVitals(
+    public ResponseEntity<BaseResponse<OPDVisitDTO>> recordVitals(
             @PathVariable Long opdVisitId,
             @RequestParam Double weight,
             @RequestParam Double height,
@@ -96,18 +97,18 @@ public class OPDController {
             @RequestParam Integer pulse,
             @RequestParam Integer resp,
             @RequestParam Integer spo2) {
-        OPDVisit visit = opdVisitService.recordVitals(opdVisitId, weight, height, bp, temp, pulse, resp, spo2);
+        OPDVisitDTO visit = opdVisitService.recordVitals(opdVisitId, weight, height, bp, temp, pulse, resp, spo2);
         return ResponseEntity.ok(new BaseResponse<>(true, "Vitals recorded successfully", null, visit));
     }
 
     @PatchMapping("/{id}/status")
     @PreAuthorize("hasAuthority('OPD_WRITE')")
     @Operation(summary = "Update visit status", description = "Updates the status of an OPD visit (e.g., CALLED, IN_CONSULTATION, COMPLETED)")
-    public ResponseEntity<BaseResponse<OPDVisit>> updateStatus(
+    public ResponseEntity<BaseResponse<OPDVisitDTO>> updateStatus(
             @PathVariable Long id,
             @RequestParam String status,
             @RequestParam(required = false) String remark) {
-        OPDVisit visit = opdVisitService.updateVisitStatus(id, status, remark);
+        OPDVisitDTO visit = opdVisitService.updateVisitStatus(id, status, remark);
         return ResponseEntity.ok(new BaseResponse<>(true, "Visit status updated successfully", null, visit));
     }
 

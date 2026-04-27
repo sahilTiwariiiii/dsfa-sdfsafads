@@ -16,6 +16,7 @@ public interface DepartmentRepository extends JpaRepository<Department, Long> {
     Page<Department> findByHospitalIdAndBranchId(Long hospitalId, Long branchId, Pageable pageable);
 
     Optional<Department> findByHospitalIdAndBranchIdAndCode(Long hospitalId, Long branchId, String code);
+    boolean existsByHospitalIdAndBranchIdAndCode(Long hospitalId, Long branchId, String code);
 
     @Query("SELECT d FROM Department d WHERE d.hospitalId = :hospitalId AND d.branchId = :branchId " +
            "AND (:query IS NULL OR LOWER(d.name) LIKE LOWER(CONCAT('%', :query, '%')) " +

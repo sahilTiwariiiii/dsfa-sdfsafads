@@ -1,6 +1,7 @@
 package com.example.samrat.modules.admin.controller;
 
 import com.example.samrat.core.config.JwtTokenProvider;
+import com.example.samrat.core.context.TenantContext;
 import com.example.samrat.core.dto.BaseResponse;
 import com.example.samrat.modules.admin.dto.LoginRequest;
 import com.example.samrat.modules.admin.dto.RegisterRequest;
@@ -9,6 +10,7 @@ import com.example.samrat.modules.admin.repository.RoleRepository;
 import com.example.samrat.modules.admin.repository.UserRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -51,7 +53,14 @@ public class AuthController {
                     ),
                     @ApiResponse(
                             responseCode = "400",
-                            description = "Invalid input data"
+                            description = "Invalid input or missing tenant context",
+                            content = @Content(
+                                    schema = @Schema(implementation = BaseResponse.class),
+                                    examples = @ExampleObject(
+                                            name = "RegisterError",
+                                            value = "{\"success\":false,\"message\":\"Cannot resolve hospital/branch for this request. Login first or provide tenant headers.\",\"error\":\"TENANT_CONTEXT_MISSING\",\"data\":null}"
+                                    )
+                            )
                     )
               }
     )
@@ -69,6 +78,17 @@ public class AuthController {
         user.setEmail(registerRequest.getEmail());
         user.setFullName(registerRequest.getFullName());
         user.setActive(true);
+        user.setHospitalId(resolveHospitalId());
+        user.setBranchId(resolveBranchId());
+
+        if (user.getHospitalId() == null || user.getBranchId() == null) {
+            return ResponseEntity.badRequest().body(
+                    new BaseResponse<>(false,
+                            "Cannot resolve hospital/branch for this request. Login first or provide tenant headers.",
+                            "TENANT_CONTEXT_MISSING",
+                            null)
+            );
+        }
 
         // Handle roles
         if (registerRequest.getRoles() != null && !registerRequest.getRoles().isEmpty()) {
@@ -98,7 +118,14 @@ public class AuthController {
                     ),
                     @ApiResponse(
                             responseCode = "401",
-                            description = "Unauthorized - Invalid credentials"
+                            description = "Unauthorized - Invalid credentials",
+                            content = @Content(
+                                    schema = @Schema(implementation = BaseResponse.class),
+                                    examples = @ExampleObject(
+                                            name = "InvalidCredentials",
+                                            value = "{\"success\":false,\"message\":\"Invalid username or password\",\"error\":\"BAD_CREDENTIALS\",\"data\":null}"
+                                    )
+                            )
                     )
             }
     )
@@ -130,5 +157,26 @@ public class AuthController {
     )
     public ResponseEntity<BaseResponse<List<User>>> getUsers() {
         return ResponseEntity.ok(new BaseResponse<>(true, "Users retrieved", null, userRepository.findAll()));
+    }
+
+    private Long resolveHospitalId() {
+        return resolveCurrentUser()
+                .map(User::getHospitalId)
+                .orElseGet(TenantContext::getHospitalId);
+    }
+
+    private Long resolveBranchId() {
+        return resolveCurrentUser()
+                .map(User::getBranchId)
+                .orElseGet(TenantContext::getBranchId);
+    }
+
+    private java.util.Optional<User> resolveCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return java.util.Optional.empty();
+        }
+        String username = authentication.getName();
+        return userRepository.findByUsernameAndActiveTrue(username);
     }
 }

@@ -1,6 +1,8 @@
 package com.example.samrat.modules.clinical.controller;
 
 import com.example.samrat.core.dto.BaseResponse;
+import com.example.samrat.modules.clinical.dto.CreateClinicalDetailsRequest;
+import com.example.samrat.modules.clinical.dto.EMRRecordResponseDTO;
 import com.example.samrat.modules.clinical.discharge.entity.DischargeSummary;
 import com.example.samrat.modules.clinical.emergency.entity.ERVisit;
 import com.example.samrat.modules.clinical.emr.entity.*;
@@ -8,8 +10,12 @@ import com.example.samrat.modules.clinical.nursing.entity.NursingNote;
 import com.example.samrat.modules.clinical.ot.entity.OTBooking;
 import com.example.samrat.modules.clinical.service.ClinicalService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -40,7 +46,7 @@ public class ClinicalController {
                     @ApiResponse(responseCode = "403", description = "Forbidden - Insufficient permissions")
             }
     )
-    public ResponseEntity<BaseResponse<Page<EMRRecord>>> listClinicalDetails(
+    public ResponseEntity<BaseResponse<Page<EMRRecordResponseDTO>>> listClinicalDetails(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int limit,
             @RequestParam(required = false) Long roomId,
@@ -48,13 +54,122 @@ public class ClinicalController {
             @RequestParam(required = false) Long doctorId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDateTime date) {
         Pageable pageable = PageRequest.of(page - 1, limit);
-        return ResponseEntity.ok(new BaseResponse<>(true, "Clinical details list", null, clinicalService.searchEMRRecords(null, doctorId, null, status, null, pageable)));
+        Page<EMRRecordResponseDTO> records = clinicalService
+                .searchEMRRecords(null, doctorId, null, status, null, pageable)
+                .map(this::toEMRResponseDTO);
+        return ResponseEntity.ok(new BaseResponse<>(true, "Clinical details list", null, records));
     }
 
     @PostMapping
-    @Operation(summary = "Create V1 - clinicalDetailsRoute")
-    public ResponseEntity<BaseResponse<EMRRecord>> createClinicalDetails(@RequestBody EMRRecord record) {
-        return ResponseEntity.ok(new BaseResponse<>(true, "Created", null, clinicalService.createEMRRecord(record, null, null, null)));
+    @Operation(
+            summary = "Create V1 - clinicalDetailsRoute",
+            description = "Creates a clinical record.\n\n" +
+                    "Required fields in request body:\n" +
+                    "- patientId\n" +
+                    "- doctorId\n\n" +
+                    "All other request body fields are optional.",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Clinical record request body.\nRequired: patientId, doctorId.\nOptional: all other fields.",
+                    required = true,
+                    content = @Content(
+                            schema = @Schema(implementation = CreateClinicalDetailsRequest.class),
+                            examples = @ExampleObject(
+                                    name = "CreateClinicalDetailsRequestExample",
+                                    value = "{\n" +
+                                            "  \"patientId\": 101,\n" +
+                                            "  \"doctorId\": 21,\n" +
+                                            "  \"departmentId\": 5,\n" +
+                                            "  \"chiefComplaint\": \"Fever with cough for 3 days\",\n" +
+                                            "  \"bloodPressure\": \"120/80\",\n" +
+                                            "  \"bodyTemperature\": 98.6,\n" +
+                                            "  \"heartRate\": 78,\n" +
+                                            "  \"respiratoryRate\": 16,\n" +
+                                            "  \"oxygenSaturation\": 98,\n" +
+                                            "  \"weight\": 72.4,\n" +
+                                            "  \"height\": 172,\n" +
+                                            "  \"bmi\": 24.5,\n" +
+                                            "  \"historyOfPresentIllness\": \"Intermittent fever, mild breathlessness\",\n" +
+                                            "  \"pastMedicalHistory\": \"Type 2 diabetes for 5 years\",\n" +
+                                            "  \"allergies\": \"Penicillin\",\n" +
+                                            "  \"physicalExamination\": \"Mild wheeze on auscultation\",\n" +
+                                            "  \"diagnosis\": \"Acute bronchitis\",\n" +
+                                            "  \"prescription\": \"Paracetamol 650 mg SOS\",\n" +
+                                            "  \"labOrders\": \"CBC, CRP\",\n" +
+                                            "  \"radiologyOrders\": \"Chest X-ray PA view\",\n" +
+                                            "  \"status\": \"ACTIVE\"\n" +
+                                            "}"
+                            )
+                    )
+            )
+    )
+    public ResponseEntity<BaseResponse<EMRRecordResponseDTO>> createClinicalDetails(
+            @Valid
+            @org.springframework.web.bind.annotation.RequestBody
+            CreateClinicalDetailsRequest request) {
+        EMRRecord record = new EMRRecord();
+        record.setChiefComplaint(request.getChiefComplaint());
+        record.setBloodPressure(request.getBloodPressure());
+        record.setBodyTemperature(request.getBodyTemperature());
+        record.setHeartRate(request.getHeartRate());
+        record.setRespiratoryRate(request.getRespiratoryRate());
+        record.setOxygenSaturation(request.getOxygenSaturation());
+        record.setWeight(request.getWeight());
+        record.setHeight(request.getHeight());
+        record.setBmi(request.getBmi());
+        record.setHistoryOfPresentIllness(request.getHistoryOfPresentIllness());
+        record.setPastMedicalHistory(request.getPastMedicalHistory());
+        record.setAllergies(request.getAllergies());
+        record.setPhysicalExamination(request.getPhysicalExamination());
+        record.setDiagnosis(request.getDiagnosis());
+        record.setPrescription(request.getPrescription());
+        record.setLabOrders(request.getLabOrders());
+        record.setRadiologyOrders(request.getRadiologyOrders());
+        if (request.getStatus() != null && !request.getStatus().isBlank()) {
+            record.setStatus(request.getStatus());
+        }
+
+        EMRRecord createdRecord = clinicalService.createEMRRecord(record, request.getPatientId(), request.getDoctorId(), request.getDepartmentId());
+
+        return ResponseEntity.ok(new BaseResponse<>(
+                true,
+                "Created",
+                null,
+                toEMRResponseDTO(createdRecord)
+        ));
+    }
+
+    private EMRRecordResponseDTO toEMRResponseDTO(EMRRecord record) {
+        EMRRecordResponseDTO dto = new EMRRecordResponseDTO();
+        dto.setId(record.getId());
+        if (record.getPatient() != null) {
+            dto.setPatientId(record.getPatient().getId());
+        }
+        if (record.getDoctor() != null) {
+            dto.setDoctorId(record.getDoctor().getId());
+        }
+        if (record.getDepartment() != null) {
+            dto.setDepartmentId(record.getDepartment().getId());
+        }
+
+        dto.setChiefComplaint(record.getChiefComplaint());
+        dto.setBloodPressure(record.getBloodPressure());
+        dto.setBodyTemperature(record.getBodyTemperature());
+        dto.setHeartRate(record.getHeartRate());
+        dto.setRespiratoryRate(record.getRespiratoryRate());
+        dto.setOxygenSaturation(record.getOxygenSaturation());
+        dto.setWeight(record.getWeight());
+        dto.setHeight(record.getHeight());
+        dto.setBmi(record.getBmi());
+        dto.setHistoryOfPresentIllness(record.getHistoryOfPresentIllness());
+        dto.setPastMedicalHistory(record.getPastMedicalHistory());
+        dto.setAllergies(record.getAllergies());
+        dto.setPhysicalExamination(record.getPhysicalExamination());
+        dto.setDiagnosis(record.getDiagnosis());
+        dto.setPrescription(record.getPrescription());
+        dto.setLabOrders(record.getLabOrders());
+        dto.setRadiologyOrders(record.getRadiologyOrders());
+        dto.setStatus(record.getStatus());
+        return dto;
     }
 
     @GetMapping("/{id}")

@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface OPDVisitRepository extends JpaRepository<OPDVisit, Long> {
     List<OPDVisit> findByHospitalIdAndBranchId(Long hospitalId, Long branchId);
@@ -34,4 +35,6 @@ public interface OPDVisitRepository extends JpaRepository<OPDVisit, Long> {
             Pageable pageable);
 
     List<OPDVisit> findByPatientId(Long patientId);
+
+    Optional<OPDVisit> findByHospitalIdAndBranchIdAndAppointmentId(Long hospitalId, Long branchId, Long appointmentId);
 }

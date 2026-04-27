@@ -1,6 +1,7 @@
 package com.example.samrat.modules.appointment.controller;
 
 import com.example.samrat.core.dto.BaseResponse;
+import com.example.samrat.modules.appointment.dto.AppointmentDTO;
 import com.example.samrat.modules.appointment.entity.Appointment;
 import com.example.samrat.modules.appointment.service.AppointmentService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,7 +29,7 @@ public class AppointmentController {
     @GetMapping
     @PreAuthorize("hasAuthority('APPOINTMENT_READ')")
     @Operation(summary = "Get all appointments", description = "Retrieves a paginated list of all appointments")
-    public ResponseEntity<BaseResponse<Page<Appointment>>> listAppointmentsV1(
+    public ResponseEntity<BaseResponse<Page<AppointmentDTO>>> listAppointmentsV1(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -39,8 +40,8 @@ public class AppointmentController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('APPOINTMENT_CREATE')")
-    @Operation(summary = "Create a new appointment", description = "Schedules a new appointment for a patient with a specific doctor and department")
-    public ResponseEntity<BaseResponse<Appointment>> createAppointmentV1(
+    @Operation(summary = "Create a new appointment", description = "Schedules a new appointment for a patient with a specific doctor and department. Allowed visitType values: OPD, IPD, EMERGENCY")
+    public ResponseEntity<BaseResponse<AppointmentDTO>> createAppointmentV1(
             @RequestParam Long patientId,
             @RequestParam Long doctorId,
             @RequestParam(required = false) Long departmentId,
@@ -49,15 +50,15 @@ public class AppointmentController {
             @RequestParam(required = false) String priority,
             @RequestParam(required = false) String source,
             @RequestParam(required = false) String notes) {
-        Appointment appointment = appointmentService.createAppointment(patientId, doctorId, departmentId, date, visitType, priority, source, notes);
+        AppointmentDTO appointment = appointmentService.createAppointment(patientId, doctorId, departmentId, date, visitType, priority, source, notes);
         return ResponseEntity.ok(new BaseResponse<>(true, "Appointment created successfully", null, appointment));
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('APPOINTMENT_READ')")
     @Operation(summary = "Get appointment by ID", description = "Retrieves details of a specific appointment")
-    public ResponseEntity<BaseResponse<Appointment>> getAppointmentById(@PathVariable Long id) {
-        Appointment appointment = appointmentService.getAppointmentById(id);
+    public ResponseEntity<BaseResponse<AppointmentDTO>> getAppointmentById(@PathVariable Long id) {
+        AppointmentDTO appointment = appointmentService.getAppointmentById(id);
         return ResponseEntity.ok(new BaseResponse<>(true, "Appointment found", null, appointment));
     }
 
@@ -80,54 +81,54 @@ public class AppointmentController {
     @PatchMapping("/{id}/status")
     @PreAuthorize("hasAuthority('APPOINTMENT_UPDATE')")
     @Operation(summary = "Update appointment status", description = "Updates the status of an appointment (e.g., CONFIRMED, CANCELLED, COMPLETED)")
-    public ResponseEntity<BaseResponse<Appointment>> updateStatus(
+    public ResponseEntity<BaseResponse<AppointmentDTO>> updateStatus(
             @PathVariable Long id,
             @RequestParam String status,
             @RequestParam(required = false) String cancellationReason) {
-        Appointment appointment = appointmentService.updateAppointmentStatus(id, status, cancellationReason);
+        AppointmentDTO appointment = appointmentService.updateAppointmentStatus(id, status, cancellationReason);
         return ResponseEntity.ok(new BaseResponse<>(true, "Appointment status updated", null, appointment));
     }
 
     @GetMapping("/daily")
     @PreAuthorize("hasAuthority('APPOINTMENT_READ')")
     @Operation(summary = "Get daily appointments", description = "Retrieves all appointments scheduled for a specific date")
-    public ResponseEntity<BaseResponse<Page<Appointment>>> getDailyAppointments(
+    public ResponseEntity<BaseResponse<Page<AppointmentDTO>>> getDailyAppointments(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Appointment> appointments = appointmentService.getDailyAppointments(date, pageable);
+        Page<AppointmentDTO> appointments = appointmentService.getDailyAppointments(date, pageable);
         return ResponseEntity.ok(new BaseResponse<>(true, "Daily appointments found", null, appointments));
     }
 
     @GetMapping("/patient/{patientId}")
     @PreAuthorize("hasAuthority('APPOINTMENT_READ')")
     @Operation(summary = "Get patient appointments", description = "Retrieves all appointments for a specific patient")
-    public ResponseEntity<BaseResponse<Page<Appointment>>> getPatientAppointments(
+    public ResponseEntity<BaseResponse<Page<AppointmentDTO>>> getPatientAppointments(
             @PathVariable Long patientId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Appointment> appointments = appointmentService.getAppointmentsByPatient(patientId, pageable);
+        Page<AppointmentDTO> appointments = appointmentService.getAppointmentsByPatient(patientId, pageable);
         return ResponseEntity.ok(new BaseResponse<>(true, "Patient appointments found", null, appointments));
     }
 
     @GetMapping("/doctor/{doctorId}")
     @PreAuthorize("hasAuthority('APPOINTMENT_READ')")
     @Operation(summary = "Get doctor appointments", description = "Retrieves all appointments for a specific doctor")
-    public ResponseEntity<BaseResponse<Page<Appointment>>> getDoctorAppointments(
+    public ResponseEntity<BaseResponse<Page<AppointmentDTO>>> getDoctorAppointments(
             @PathVariable Long doctorId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Appointment> appointments = appointmentService.getAppointmentsByDoctor(doctorId, pageable);
+        Page<AppointmentDTO> appointments = appointmentService.getAppointmentsByDoctor(doctorId, pageable);
         return ResponseEntity.ok(new BaseResponse<>(true, "Doctor appointments found", null, appointments));
     }
 
     @GetMapping("/search")
     @PreAuthorize("hasAuthority('APPOINTMENT_READ')")
     @Operation(summary = "Search appointments", description = "Filters appointments by patient, doctor, department, date range, and status")
-    public ResponseEntity<BaseResponse<Page<Appointment>>> searchAppointments(
+    public ResponseEntity<BaseResponse<Page<AppointmentDTO>>> searchAppointments(
             @RequestParam(required = false) Long patientId,
             @RequestParam(required = false) Long doctorId,
             @RequestParam(required = false) Long departmentId,
@@ -137,7 +138,7 @@ public class AppointmentController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Appointment> appointments = appointmentService.searchAppointments(patientId, doctorId, departmentId, startDate, endDate, status, pageable);
+        Page<AppointmentDTO> appointments = appointmentService.searchAppointments(patientId, doctorId, departmentId, startDate, endDate, status, pageable);
         return ResponseEntity.ok(new BaseResponse<>(true, "Search results found", null, appointments));
     }
 }

@@ -90,6 +90,108 @@ The IPD flow is more complex and involves resource management:
 
 ---
 
+## 🏨 Detailed Inpatient (IPD) API Flow (With Examples)
+
+Use this section to test IPD end-to-end in Swagger without confusion.
+
+### 0) Prerequisites (create once)
+- Have a valid `patientId` (from `POST /api/v1/patients/register`).
+- Have a valid `doctorId` (from doctor module).
+- Authorize Swagger with JWT token.
+
+### 1) Create/Check Ward
+- **Create Ward (if not already present):** `POST /api/v1/ipd/wards?departmentId=5`
+- **Body example:**
+  ```json
+  {
+    "name": "General Ward A",
+    "code": "GW-A",
+    "floor": "2",
+    "description": "General inpatient ward"
+  }
+  ```
+- **List Wards:** `GET /api/v1/ipd/wards`
+- Save `wardId` from response.
+
+### 2) Create/Check Bed
+- **Create Bed:** `POST /api/v1/ipd/beds?wardId={wardId}`
+- **Body example:**
+  ```json
+  {
+    "bedNumber": "A-201",
+    "bedType": "GENERAL",
+    "status": "AVAILABLE",
+    "dailyRate": 1500
+  }
+  ```
+- **Get Available Beds:** `GET /api/v1/ipd/beds/available?wardId={wardId}`
+- Save available `bedId`.
+
+### 3) Admit Patient (Core IPD Entry)
+- **Endpoint:** `POST /api/v1/ipd/admit?patientId={patientId}&doctorId={doctorId}&bedId={bedId}&departmentId=5`
+- **Body example:**
+  ```json
+  {
+    "admissionReason": "High fever with dehydration",
+    "provisionalDiagnosis": "Viral fever",
+    "attendantName": "Rahul Sharma",
+    "attendantContact": "9876543210",
+    "notes": "Needs close monitoring for 24 hours"
+  }
+  ```
+- Save `admissionId` from response.
+
+### 4) Verify Admission + Bed Occupancy
+- **Search admissions:** `GET /api/v1/ipd/admissions/search?patientId={patientId}`
+- **Get admission by id:** `GET /api/v1/ipd/{admissionId}`
+- **Expected:** admission is active and bed should be marked occupied.
+
+### 5) IPD Clinical/Nursing Updates During Stay
+- **Create nursing note:** `POST /api/v1/clinical/nursing-note?admissionId={admissionId}`
+- **Body example:**
+  ```json
+  {
+    "noteText": "Vitals stable. IV fluids started."
+  }
+  ```
+- **Create doctor EMR record (optional during admission):** `POST /api/v1/clinical/emr?patientId={patientId}&doctorId={doctorId}&departmentId=5`
+- **Body example:**
+  ```json
+  {
+    "chiefComplaint": "Weakness and fever",
+    "bloodPressure": "118/76",
+    "bodyTemperature": 99.1,
+    "diagnosis": "Viral fever",
+    "prescription": "Paracetamol and hydration"
+  }
+  ```
+
+### 6) Bed Transfer (if needed)
+- **Endpoint:** `POST /api/v1/ipd/transfer-bed/{admissionId}?newBedId={newBedId}`
+- **Expected:** old bed released, new bed occupied.
+
+### 7) Generate Bill (common before discharge)
+- Use billing module endpoints (invoice creation/line items) based on your setup:
+  - e.g. `POST /api/v1/billing/invoices`
+- Link invoice with patient/admission as per response model in Swagger.
+
+### 8) Discharge Patient (IPD Exit)
+- **Endpoint:** `POST /api/v1/ipd/discharge/{admissionId}`
+- **Expected:** admission marked discharged and current bed released to available.
+
+### 9) Post-Discharge Validation Checklist
+- `GET /api/v1/ipd/{admissionId}` shows discharge status/time.
+- `GET /api/v1/ipd/beds/available?wardId={wardId}` includes released bed.
+- Billing/invoice status is finalized (if applicable).
+
+### Common IPD Test Mistakes
+- Admitting on a non-available bed -> admission fails.
+- Missing tenant context/JWT -> authorization or tenant errors.
+- Trying discharge twice -> should return error or no-op based on service logic.
+- Using wrong IDs across hospitals/branches -> records not found due to tenant isolation.
+
+---
+
 ## ✅ Why this architecture follows Best Practices?
 
 1. **Separation of Concerns:**

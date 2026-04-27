@@ -6,6 +6,7 @@ import com.example.samrat.modules.patient.dto.PatientRegistrationRequest;
 import com.example.samrat.modules.patient.service.PatientService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,7 +34,7 @@ public class PatientController {
     @PostMapping("/patient-register")
     @PreAuthorize("hasAuthority('PATIENT_CREATE')")
     @Operation(
-            summary = "POST /api/v1/patient-register",
+            summary = "POST /api/v1/patients/patient-register",
             description = "Registers a new patient and records their initial visit details",
             responses = {
                     @ApiResponse(
@@ -43,7 +44,31 @@ public class PatientController {
                     ),
                     @ApiResponse(
                             responseCode = "400",
-                            description = "Validation error - Check request body for missing required fields"
+                            description = "Validation or tenant context error",
+                            content = @Content(
+                                    schema = @Schema(implementation = BaseResponse.class),
+                                    examples = {
+                                            @ExampleObject(
+                                                    name = "ValidationError",
+                                                    value = "{\"success\":false,\"message\":\"Validation Failed\",\"error\":null,\"data\":{\"mobile\":\"Mobile number is required\"}}"
+                                            ),
+                                            @ExampleObject(
+                                                    name = "TenantError",
+                                                    value = "{\"success\":false,\"message\":\"Hospital/Branch context is missing. Please login again.\",\"error\":null,\"data\":null}"
+                                            )
+                                    }
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized - missing or invalid JWT token",
+                            content = @Content(
+                                    schema = @Schema(implementation = BaseResponse.class),
+                                    examples = @ExampleObject(
+                                            name = "Unauthorized",
+                                            value = "{\"success\":false,\"message\":\"Unauthorized\",\"error\":\"Full authentication is required to access this resource\",\"data\":null}"
+                                    )
+                            )
                     )
             }
     )
@@ -56,7 +81,50 @@ public class PatientController {
 
     @PostMapping("/register")
     @PreAuthorize("hasAuthority('PATIENT_CREATE')")
-    @Operation(summary = "Register new patient", description = "Creates a new patient profile in the system")
+    @Operation(
+            summary = "Register new patient",
+            description = "Creates a new patient profile in the system",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Patient registered successfully",
+                            content = @Content(schema = @Schema(implementation = BaseResponse.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Validation error - Check request body for missing required fields",
+                            content = @Content(
+                                    schema = @Schema(implementation = BaseResponse.class),
+                                    examples = @ExampleObject(
+                                            name = "ValidationError",
+                                            value = "{\"success\":false,\"message\":\"Validation Failed\",\"error\":null,\"data\":{\"firstName\":\"must not be blank\"}}"
+                                    )
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized - missing or invalid JWT token",
+                            content = @Content(
+                                    schema = @Schema(implementation = BaseResponse.class),
+                                    examples = @ExampleObject(
+                                            name = "Unauthorized",
+                                            value = "{\"success\":false,\"message\":\"Unauthorized\",\"error\":\"Full authentication is required to access this resource\",\"data\":null}"
+                                    )
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden - user lacks PATIENT_CREATE permission",
+                            content = @Content(
+                                    schema = @Schema(implementation = BaseResponse.class),
+                                    examples = @ExampleObject(
+                                            name = "Forbidden",
+                                            value = "{\"success\":false,\"message\":\"Access denied\",\"error\":\"Access is denied\",\"data\":null}"
+                                    )
+                            )
+                    )
+            }
+    )
     public ResponseEntity<BaseResponse<PatientDTO>> registerPatient(@Valid @RequestBody PatientDTO patientDTO) {
         PatientDTO registeredPatient = patientService.registerPatient(patientDTO);
         return ResponseEntity.ok(new BaseResponse<>(true, "Patient registered successfully", null, registeredPatient));

@@ -1,6 +1,7 @@
 package com.example.samrat.modules.patient.service;
 
 import com.example.samrat.core.context.TenantContext;
+import com.example.samrat.modules.admin.repository.UserRepository;
 import com.example.samrat.modules.patient.dto.PatientDTO;
 import com.example.samrat.modules.patient.entity.Patient;
 import com.example.samrat.modules.patient.repository.PatientRepository;
@@ -19,6 +20,7 @@ import com.example.samrat.modules.patient.dto.PatientRegistrationRequest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -30,40 +32,53 @@ public class PatientService {
     private final OPDVisitRepository opdVisitRepository;
     private final DoctorRepository doctorRepository;
     private final DepartmentRepository departmentRepository;
+    private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
     @Transactional
     public PatientDTO registerPatientFromRequest(PatientRegistrationRequest request) {
+        Tenant tenant = resolveTenantContext();
+
+        // De-duplicate by mobile number within the same hospital + branch.
+        // If a patient already exists for this mobile, we re-use it and only create a visit.
+        Patient existing = findExistingByMobile(tenant, request.getMobile());
+
         Patient patient = new Patient();
+        if (existing != null) {
+            patient = existing;
+        }
+
         // Map fields from request to entity
-        String[] nameParts = request.getPatientName().split(" ");
-        patient.setFirstName(nameParts[0]);
-        patient.setLastName(nameParts.length > 1 ? nameParts[1] : "");
-        patient.setGender(request.getGender());
-        patient.setPhoneNumber(request.getMobile());
-        patient.setEmail(request.getEmail());
-        patient.setAddress(request.getAddress());
-        patient.setMaritalStatus(request.getMaritalStatus());
-        patient.setBloodGroup(request.getBloodGroup());
-        patient.setGuardianName(request.getGuardianName());
+        if (existing == null) {
+            String[] nameParts = request.getPatientName().split(" ");
+            patient.setFirstName(nameParts[0]);
+            patient.setLastName(nameParts.length > 1 ? nameParts[1] : "");
+            patient.setGender(request.getGender());
+            patient.setPhoneNumber(request.getMobile());
+            patient.setEmail(request.getEmail());
+            patient.setAddress(request.getAddress());
+            patient.setMaritalStatus(request.getMaritalStatus());
+            patient.setBloodGroup(request.getBloodGroup());
+            patient.setGuardianName(request.getGuardianName());
         
-        if (request.getDob() != null && !request.getDob().isEmpty()) {
-            patient.setDateOfBirth(LocalDate.parse(request.getDob()));
+            if (request.getDob() != null && !request.getDob().isEmpty()) {
+                patient.setDateOfBirth(LocalDate.parse(request.getDob()));
+            }
+
+            patient.setHospitalId(tenant.hospitalId());
+            patient.setBranchId(tenant.branchId());
+
+            if (patient.getUhid() == null) {
+                patient.setUhid("UHID-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+            }
+
+            patient = patientRepository.save(patient);
         }
-
-        patient.setHospitalId(TenantContext.getHospitalId());
-        patient.setBranchId(TenantContext.getBranchId());
-
-        if (patient.getUhid() == null) {
-            patient.setUhid("UHID-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
-        }
-
-        Patient savedPatient = patientRepository.save(patient);
 
         // If visit type is OPD, create an OPD visit
         if ("OPD".equalsIgnoreCase(request.getVisitType())) {
             OPDVisit opdVisit = new OPDVisit();
-            opdVisit.setPatient(savedPatient);
+            opdVisit.setPatient(patient);
             
             if (request.getDoctorId() != null) {
                 // Assuming doctorId in request is Long, if it's String we need to parse it
@@ -90,20 +105,29 @@ public class PatientService {
             opdVisit.setFee(request.getFee());
             opdVisit.setTokenNumber("WALK-IN-" + System.currentTimeMillis() % 1000);
             opdVisit.setStatus(OPDVisit.VisitStatus.WAITING);
-            opdVisit.setHospitalId(TenantContext.getHospitalId());
-            opdVisit.setBranchId(TenantContext.getBranchId());
+            opdVisit.setHospitalId(tenant.hospitalId());
+            opdVisit.setBranchId(tenant.branchId());
 
             opdVisitRepository.save(opdVisit);
         }
 
-        return modelMapper.map(savedPatient, PatientDTO.class);
+        return modelMapper.map(patient, PatientDTO.class);
     }
 
     @Transactional
     public PatientDTO registerPatient(PatientDTO patientDTO) {
+        Tenant tenant = resolveTenantContext();
+
+        // Reject duplicate registration for standalone patients so API response matches DB behavior.
+        List<Patient> samePhone = patientRepository.findByHospitalIdAndBranchIdAndPhoneNumber(
+                tenant.hospitalId(), tenant.branchId(), patientDTO.getPhoneNumber());
+        if (!samePhone.isEmpty() && patientDTO.getFamilyHeadId() == null) {
+            throw new IllegalStateException("Patient already exists with this phone number.");
+        }
+
         Patient patient = modelMapper.map(patientDTO, Patient.class);
-        patient.setHospitalId(TenantContext.getHospitalId());
-        patient.setBranchId(TenantContext.getBranchId());
+        patient.setHospitalId(tenant.hospitalId());
+        patient.setBranchId(tenant.branchId());
 
         // Generate UHID if not provided
         if (patient.getUhid() == null) {
@@ -176,5 +200,41 @@ public class PatientService {
     @Transactional
     public void deletePatient(Long id) {
         patientRepository.deleteById(id);
+    }
+
+    private Tenant resolveTenantContext() {
+        Long hospitalId = TenantContext.getHospitalId();
+        Long branchId = TenantContext.getBranchId();
+
+        if (hospitalId != null && branchId != null) {
+            return new Tenant(hospitalId, branchId);
+        }
+
+        Optional.ofNullable(org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication())
+                .map(org.springframework.security.core.Authentication::getName)
+                .flatMap(userRepository::findByUsernameAndActiveTrue)
+                .ifPresent(user -> {
+                    TenantContext.setHospitalId(user.getHospitalId());
+                    TenantContext.setBranchId(user.getBranchId());
+                });
+
+        hospitalId = TenantContext.getHospitalId();
+        branchId = TenantContext.getBranchId();
+        if (hospitalId == null || branchId == null) {
+            throw new RuntimeException("Hospital/Branch context is missing. Please login again.");
+        }
+        return new Tenant(hospitalId, branchId);
+    }
+
+    private record Tenant(Long hospitalId, Long branchId) {
+    }
+
+    private Patient findExistingByMobile(Tenant tenant, String mobile) {
+        if (mobile == null || mobile.isBlank()) {
+            return null;
+        }
+        List<Patient> existing = patientRepository.findByHospitalIdAndBranchIdAndPhoneNumber(
+                tenant.hospitalId(), tenant.branchId(), mobile);
+        return existing.isEmpty() ? null : existing.get(0);
     }
 }
