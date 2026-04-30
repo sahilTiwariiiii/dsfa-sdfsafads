@@ -174,14 +174,16 @@ public class ClinicalController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Get V1 - clinicalDetailsRoute by ID")
-    public ResponseEntity<BaseResponse<EMRRecord>> getClinicalDetailById(@PathVariable Long id) {
-        return ResponseEntity.ok(new BaseResponse<>(true, "Detail", null, clinicalService.getEMRRecordById(id)));
+    public ResponseEntity<BaseResponse<EMRRecordResponseDTO>> getClinicalDetailById(@PathVariable Long id) {
+        EMRRecord record = clinicalService.getEMRRecordById(id);
+        return ResponseEntity.ok(new BaseResponse<>(true, "Detail", null, toEMRResponseDTO(record)));
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Update V1 - clinicalDetailsRoute")
-    public ResponseEntity<BaseResponse<EMRRecord>> updateClinicalDetail(@PathVariable Long id, @RequestBody EMRRecord record) {
-        return ResponseEntity.ok(new BaseResponse<>(true, "Updated", null, clinicalService.updateEMRRecord(id, record)));
+    public ResponseEntity<BaseResponse<EMRRecordResponseDTO>> updateClinicalDetail(@PathVariable Long id, @RequestBody EMRRecord record) {
+        EMRRecord updated = clinicalService.updateEMRRecord(id, record);
+        return ResponseEntity.ok(new BaseResponse<>(true, "Updated", null, toEMRResponseDTO(updated)));
     }
 
     @DeleteMapping("/{id}")
@@ -380,19 +382,19 @@ public class ClinicalController {
     @PostMapping("/emr")
     @PreAuthorize("hasAuthority('CLINICAL_WRITE')")
     @Operation(summary = "Create EMR record", description = "Records a new electronic medical record for a patient")
-    public ResponseEntity<BaseResponse<EMRRecord>> createEMR(
+    public ResponseEntity<BaseResponse<EMRRecordResponseDTO>> createEMR(
             @RequestBody EMRRecord record,
             @RequestParam Long patientId,
             @RequestParam Long doctorId,
             @RequestParam(required = false) Long departmentId) {
         EMRRecord created = clinicalService.createEMRRecord(record, patientId, doctorId, departmentId);
-        return ResponseEntity.ok(new BaseResponse<>(true, "EMR record created successfully", null, created));
+        return ResponseEntity.ok(new BaseResponse<>(true, "EMR record created successfully", null, toEMRResponseDTO(created)));
     }
 
     @GetMapping("/emr/search")
     @PreAuthorize("hasAuthority('CLINICAL_READ')")
     @Operation(summary = "Search EMR records", description = "Filters EMR records by patient, doctor, department, and keywords")
-    public ResponseEntity<BaseResponse<Page<EMRRecord>>> searchEMR(
+    public ResponseEntity<BaseResponse<Page<EMRRecordResponseDTO>>> searchEMR(
             @RequestParam(required = false) Long patientId,
             @RequestParam(required = false) Long doctorId,
             @RequestParam(required = false) Long departmentId,
@@ -401,22 +403,25 @@ public class ClinicalController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<EMRRecord> records = clinicalService.searchEMRRecords(patientId, doctorId, departmentId, status, keyword, pageable);
+        Page<EMRRecordResponseDTO> records = clinicalService.searchEMRRecords(patientId, doctorId, departmentId, status, keyword, pageable)
+                .map(this::toEMRResponseDTO);
         return ResponseEntity.ok(new BaseResponse<>(true, "EMR records found", null, records));
     }
 
     @GetMapping("/emr/{id}")
     @PreAuthorize("hasAuthority('CLINICAL_READ')")
     @Operation(summary = "Get EMR record by ID")
-    public ResponseEntity<BaseResponse<EMRRecord>> getEMRById(@PathVariable Long id) {
-        return ResponseEntity.ok(new BaseResponse<>(true, "EMR record found", null, clinicalService.getEMRRecordById(id)));
+    public ResponseEntity<BaseResponse<EMRRecordResponseDTO>> getEMRById(@PathVariable Long id) {
+        EMRRecord record = clinicalService.getEMRRecordById(id);
+        return ResponseEntity.ok(new BaseResponse<>(true, "EMR record found", null, toEMRResponseDTO(record)));
     }
 
     @PutMapping("/emr/{id}")
     @PreAuthorize("hasAuthority('CLINICAL_WRITE')")
     @Operation(summary = "Update EMR record")
-    public ResponseEntity<BaseResponse<EMRRecord>> updateEMR(@PathVariable Long id, @RequestBody EMRRecord record) {
-        return ResponseEntity.ok(new BaseResponse<>(true, "EMR record updated", null, clinicalService.updateEMRRecord(id, record)));
+    public ResponseEntity<BaseResponse<EMRRecordResponseDTO>> updateEMR(@PathVariable Long id, @RequestBody EMRRecord record) {
+        EMRRecord updated = clinicalService.updateEMRRecord(id, record);
+        return ResponseEntity.ok(new BaseResponse<>(true, "EMR record updated", null, toEMRResponseDTO(updated)));
     }
 
     // --- Nursing Notes ---

@@ -1,222 +1,267 @@
-# Samrat HMS - API Testing & Flow Guide
+# Samrat HMS - Enterprise API & End-to-End Testing Guide
 
-This guide provides a comprehensive walkthrough for testing the Samrat Hospital Management System (HMS) using Swagger/OpenAPI. It covers the complete lifecycle of a patient from registration to discharge.
-
-## 🚀 Getting Started with Testing
-
-The easiest way to test the application is through the **Swagger UI**.
-- **URL:** `http://localhost:8080/swagger-ui/index.html` (default)
-- **API Spec:** `http://localhost:8080/v3/api-docs`
+This guide is designed for developers and QA engineers to test the **Samrat Hospital Management System (HMS)** with accuracy and speed. It covers internal logic, multi-tenant isolation, and detailed API workflows for OPD and IPD modules.
 
 ---
 
-## 🛠️ Phase 1: Authentication & Setup
+## � 1. Authentication & Security Context
 
-Before making any calls, you need to authenticate to get a JWT token.
+Every API request requires a valid JWT token and a Hospital/Branch context.
 
-1. **Register/Login:**
+1. **Login to get Token:**
    - **Endpoint:** `POST /api/v1/auth/login`
-   - **Request:**
+   - **Body:**
      ```json
      {
        "username": "admin",
        "password": "password"
      }
      ```
-   - **Action:** Copy the token from the response and use it in the "Authorize" button in Swagger.
+2. **Authorize Swagger:**
+   - Click the **"Authorize"** button in Swagger and paste the `accessToken`.
+   - The system automatically resolves your `HospitalId` and `BranchId` from this token using `TenantContext`.
 
 ---
 
-## 🏥 Phase 2: Complete Patient Flow (The "Golden Path")
+## 🏥 2. OPD (Outpatient) Workflows: Two Distinct Approaches
 
-Follow these steps to test a full patient lifecycle:
+The system provides two ways to handle OPD visits depending on the hospital's operational style.
 
-### Step 1: Patient Registration
-- **Endpoint:** `POST /api/v1/patients/register`
-- **Purpose:** Creates a patient record and generates a Unique Health ID (UHID).
-- **Test Data:** Provide name, age, gender, and phone number.
-- **Reference:** [PatientController.java](file:///c%3A/Users/P%20cc/Desktop/devs/dsfa-sdfsafads/samrat/src/main/java/com/example/samrat/modules/patient/controller/PatientController.java)
+### Approach A: The "Fast-Track" Direct OPD (Walk-in)
+*Best for: Small clinics or emergency walk-ins where registration and consultation happen immediately.*
 
-### Step 2: Book an Appointment
-- **Endpoint:** `POST /api/v1/appointments`
-- **Purpose:** Schedule a visit with a specific doctor.
-- **Test Data:** Use the `patientId` from Step 1 and a valid `doctorId`.
-- **Reference:** [AppointmentController.java](file:///c%3A/Users/P%20cc/Desktop/devs/dsfa-sdfsafads/samrat/src/main/java/com/example/samrat/modules/appointment/controller/AppointmentController.java)
+1. **Unified Registration & Visit:**
+   - **Endpoint:** `POST /api/v1/patients/patient-register`
+   - **Description:** This is the "Solution 1". It creates a patient record AND an OPD visit in a single atomic transaction.
+   - **Body Example:**
+     ```json
+     {
+       "patientName": "John Doe",
+       "mobile": "9876543210",
+       "gender": "MALE",
+       "visitType": "OPD",
+       "doctorId": 1,
+       "departmentId": 5,
+       "fee": 500.0,
+       "slot": "MORNING"
+     }
+     ```
+   - **Internal Logic:** The system checks if the mobile number exists. If yes, it reuses the patient; if no, it creates a new UHID. It then creates an `OPDVisit` with status `WAITING`.
 
-### Step 3: OPD Check-in
-- **Endpoint:** `POST /api/v1/opd/check-in/{appointmentId}`
-- **Purpose:** Converts an appointment into an active OPD visit.
-- **Action:** This starts the OPD workflow.
-- **Reference:** [OPDController.java](file:///c%3A/Users/P%20cc/Desktop/devs/dsfa-sdfsafads/samrat/src/main/java/com/example/samrat/modules/opd/controller/OPDController.java)
+### Approach B: The "Traditional" Appointment-Based OPD
+*Best for: Large hospitals where patients book in advance and check-in upon arrival.*
 
-### Step 4: Record Vitals (Nursing)
-- **Endpoint:** `POST /api/v1/opd/vitals/{opdVisitId}`
-- **Purpose:** Record weight, height, BP, and temperature.
-- **Test Data:** Use the `opdVisitId` from Step 3.
+1. **Step 1: Standalone Registration**
+   - **Endpoint:** `POST /api/v1/patients/register`
+   - **Purpose:** Only creates the patient profile.
+   - **Reference:** [PatientController.java](file:///c%3A/Users/P%20cc/Desktop/devs/dsfa-sdfsafads/samrat/src/main/java/com/example/samrat/modules/patient/controller/PatientController.java)
 
-### Step 5: Clinical Consultation
-- **Endpoint:** `POST /api/v1/clinical`
-- **Purpose:** Doctor records diagnosis, symptoms, and prescriptions (EMR).
-- **Reference:** [ClinicalController.java](file:///c%3A/Users/P%20cc/Desktop/devs/dsfa-sdfsafads/samrat/src/main/java/com/example/samrat/modules/clinical/controller/ClinicalController.java)
+2. **Step 2: Book Appointment**
+   - **Endpoint:** `POST /api/v1/appointments`
+   - **Params:** `patientId=X`, `doctorId=Y`, `date=2024-04-27`, `visitType=OPD`
+   - **Reference:** [AppointmentController.java](file:///c%3A/Users/P%20cc/Desktop/devs/dsfa-sdfsafads/samrat/src/main/java/com/example/samrat/modules/appointment/controller/AppointmentController.java)
 
-### Step 6: IPD Admission (If needed)
-- **Endpoint:** `POST /api/v1/ipd/admissions`
-- **Purpose:** Admit the patient to a ward if the condition is serious.
-- **Test Data:** Requires `patientId`, `doctorId`, and an available `bedId`.
-- **Reference:** [IPDController.java](file:///c%3A/Users/P%20cc/Desktop/devs/dsfa-sdfsafads/samrat/src/main/java/com/example/samrat/modules/ipd/controller/IPDController.java)
-
-### Step 7: Billing & Discharge
-- **Endpoint:** `POST /api/v1/billing/invoices`
-- **Purpose:** Generate a final bill for all services rendered.
-- **Endpoint:** `POST /api/v1/ipd/discharges`
-- **Purpose:** Mark the patient as discharged and free the bed.
-
----
-
-## 🔍 Understanding the OPD & IPD Flow
-
-### 1. Outpatient (OPD) Flow
-The OPD flow is designed for speed and efficiency:
-- **Queue Management:** Appointments are converted to "Waiting" status upon check-in.
-- **Workflow:** Registration -> Triage (Vitals) -> Consultation -> Billing/Pharmacy.
-- **Best Practice:** The use of `TenantContext` ensures that patient visits are isolated by Hospital/Branch, preventing data leakage.
-
-### 2. Inpatient (IPD) Flow
-The IPD flow is more complex and involves resource management:
-- **Bed Management:** Beds are tracked by status (AVAILABLE, OCCUPIED, CLEANING).
-- **Admission:** Links a patient to a bed, a primary doctor, and a ward.
-- **Continuous Care:** Nursing notes and clinical updates are recorded against the `AdmissionID`.
-- **Best Practice:** The system uses `@Transactional` for admissions to ensure that if a bed assignment fails, the admission record is not created (maintaining data integrity).
+3. **Check-in (The "Bridge")**
+   - **Endpoint:** `POST /api/v1/opd/check-in/{appointmentId}`
+   - **Description:** This is the "Solution 2". It converts a scheduled appointment into an active OPD visit.
+   - **Internal Logic:** Updates appointment status to `CONFIRMED` and creates an `OPDVisit` record linked to that appointment.
 
 ---
 
-## 🏨 Detailed Inpatient (IPD) API Flow (With Examples)
+## 📊 3. Vitals Tracking & Historical Trends
 
-Use this section to test IPD end-to-end in Swagger without confusion.
+The system now supports dedicated vitals tracking, allowing multiple records per visit and a complete history of patient health trends.
 
-### 0) Prerequisites (create once)
-- Have a valid `patientId` (from `POST /api/v1/patients/register`).
-- Have a valid `doctorId` (from doctor module).
-- Authorize Swagger with JWT token.
+### Recording Vitals (Legacy & Real-time)
+1. **Option A: During OPD Flow**
+   - **Endpoint:** `POST /api/v1/opd/vitals/{opdVisitId}`
+   - **Behavior:** Updates the visit record AND automatically creates a entry in the historical `patient_vitals` table.
 
-### 1) Create/Check Ward
-- **Create Ward (if not already present):** `POST /api/v1/ipd/wards?departmentId=5`
-- **Body example:**
-  ```json
-  {
-    "name": "General Ward A",
-    "code": "GW-A",
-    "floor": "2",
-    "description": "General inpatient ward"
-  }
-  ```
-- **List Wards:** `GET /api/v1/ipd/wards`
-- Save `wardId` from response.
+2. **Option B: Dedicated Vitals API (Recommended for IPD/Repeated checks)**
+   - **Endpoint:** `POST /api/v1/clinical/vitals`
+   - **Body:**
+     ```json
+     {
+       "patientId": 1,
+       "weight": 72.5,
+       "height": 178.0,
+       "bloodPressure": "120/80",
+       "temperature": 98.6,
+       "pulseRate": 72,
+       "respiratoryRate": 18,
+       "spo2": 98,
+       "remark": "Morning checkup",
+       "recordedBy": "Nurse Joy"
+     }
+     ```
 
-### 2) Create/Check Bed
-- **Create Bed:** `POST /api/v1/ipd/beds?wardId={wardId}`
-- **Body example:**
-  ```json
-  {
-    "bedNumber": "A-201",
-    "bedType": "GENERAL",
-    "status": "AVAILABLE",
-    "dailyRate": 1500
-  }
-  ```
-- **Get Available Beds:** `GET /api/v1/ipd/beds/available?wardId={wardId}`
-- Save available `bedId`.
-
-### 3) Admit Patient (Core IPD Entry)
-- **Endpoint:** `POST /api/v1/ipd/admit?patientId={patientId}&doctorId={doctorId}&bedId={bedId}&departmentId=5`
-- **Body example:**
-  ```json
-  {
-    "admissionReason": "High fever with dehydration",
-    "provisionalDiagnosis": "Viral fever",
-    "attendantName": "Rahul Sharma",
-    "attendantContact": "9876543210",
-    "notes": "Needs close monitoring for 24 hours"
-  }
-  ```
-- Save `admissionId` from response.
-
-### 4) Verify Admission + Bed Occupancy
-- **Search admissions:** `GET /api/v1/ipd/admissions/search?patientId={patientId}`
-- **Get admission by id:** `GET /api/v1/ipd/{admissionId}`
-- **Expected:** admission is active and bed should be marked occupied.
-
-### 5) IPD Clinical/Nursing Updates During Stay
-- **Create nursing note:** `POST /api/v1/clinical/nursing-note?admissionId={admissionId}`
-- **Body example:**
-  ```json
-  {
-    "noteText": "Vitals stable. IV fluids started."
-  }
-  ```
-- **Create doctor EMR record (optional during admission):** `POST /api/v1/clinical/emr?patientId={patientId}&doctorId={doctorId}&departmentId=5`
-- **Body example:**
-  ```json
-  {
-    "chiefComplaint": "Weakness and fever",
-    "bloodPressure": "118/76",
-    "bodyTemperature": 99.1,
-    "diagnosis": "Viral fever",
-    "prescription": "Paracetamol and hydration"
-  }
-  ```
-
-### 6) Bed Transfer (if needed)
-- **Endpoint:** `POST /api/v1/ipd/transfer-bed/{admissionId}?newBedId={newBedId}`
-- **Expected:** old bed released, new bed occupied.
-
-### 7) Generate Bill (common before discharge)
-- Use billing module endpoints (invoice creation/line items) based on your setup:
-  - e.g. `POST /api/v1/billing/invoices`
-- Link invoice with patient/admission as per response model in Swagger.
-
-### 8) Discharge Patient (IPD Exit)
-- **Endpoint:** `POST /api/v1/ipd/discharge/{admissionId}`
-- **Expected:** admission marked discharged and current bed released to available.
-
-### 9) Post-Discharge Validation Checklist
-- `GET /api/v1/ipd/{admissionId}` shows discharge status/time.
-- `GET /api/v1/ipd/beds/available?wardId={wardId}` includes released bed.
-- Billing/invoice status is finalized (if applicable).
-
-### Common IPD Test Mistakes
-- Admitting on a non-available bed -> admission fails.
-- Missing tenant context/JWT -> authorization or tenant errors.
-- Trying discharge twice -> should return error or no-op based on service logic.
-- Using wrong IDs across hospitals/branches -> records not found due to tenant isolation.
+### Viewing Vitals History
+- **Endpoint:** `GET /api/v1/clinical/vitals/history/{patientId}`
+- **Response:** Returns a list of all recorded vitals for the patient, ordered from newest to oldest.
+- **Use Case:** Perfect for generating trend charts or checking if BP is improving over multiple days.
 
 ---
 
-## ✅ Why this architecture follows Best Practices?
+## 🩺 4. Post-Check-in Clinical Flow (Common for both A & B)
 
-1. **Separation of Concerns:**
-   - **Controllers:** Handle API requests and documentation (Swagger).
-   - **Services:** Contain business logic (e.g., generating UHIDs, calculating fees).
-   - **Repositories:** Manage database interactions.
-   - *Why?* This makes the code modular and easy to test individually.
+Once a patient is in the `OPD_VISIT` table, follow these steps:
 
-2. **Multi-Tenancy (SaaS Ready):**
-   - Every entity extends `BaseEntity` which automatically injects `hospitalId` and `branchId` via `@PrePersist`.
-   - *Why?* This is the "Gold Standard" for healthcare apps, allowing one instance to serve multiple hospitals securely.
+1. **Record Vitals (Nurse Module):**
+   - **Endpoint:** `POST /api/v1/opd/vitals/{opdVisitId}`
+   - **Params:** `weight=70`, `height=175`, `bp=120/80`, `temp=98.6`, `pulse=72`, `resp=18`, `spo2=98`
+   - **Reference:** [OPDController.java](file:///c%3A/Users/P%20cc/Desktop/devs/dsfa-sdfsafads/samrat/src/main/java/com/example/samrat/modules/opd/controller/OPDController.java)
 
-3. **Audit Trails:**
-   - `BaseEntity` tracks `createdAt`, `createdBy`, `updatedAt`, and `updatedBy`.
-   - *Why?* Essential for medical compliance (HIPAA/GDPR) to know who accessed/modified patient data.
-
-4. **Security:**
-   - Method-level security using `@PreAuthorize("hasAuthority('...')")`.
-   - *Why?* Ensures that a nurse can record vitals but only a doctor can write prescriptions.
+2. **Doctor Consultation (EMR):**
+   - **Endpoint:** `POST /api/v1/clinical/emr`
+   - **Body:**
+     ```json
+     {
+       "patientId": 1,
+       "doctorId": 1,
+       "chiefComplaint": "Persistent cough",
+       "diagnosis": "Acute Bronchitis",
+       "prescription": "Amoxicillin 500mg, 1-0-1 for 5 days"
+     }
+     ```
 
 ---
 
-## 🛑 How to ensure "100% working fine"?
+## 🛌 5. IPD (Inpatient) Lifecycle: From Admission to Discharge
 
-1. **Compilations:** Always run `./mvnw compile` to catch syntax errors.
-2. **Unit Tests:** Create tests in `src/test/java` to verify individual service logic.
-3. **Integration Tests:** Use Swagger to run the "Golden Path" flow from registration to billing.
-4. **Data Integrity:** Check the database after an admission to ensure the bed status changed to `OCCUPIED`.
+IPD testing requires careful management of resources (Wards and Beds).
+
+### Phase 1: Resource Setup (Required Once)
+1. **Create Ward:** `POST /api/v1/ipd/wards?departmentId=5`
+2. **Create Bed:** `POST /api/v1/ipd/beds?wardId={wardId}` (Set status to `AVAILABLE`)
+
+### Phase 2: The Admission Flow
+1. **Admit Patient:**
+   - **Endpoint:** `POST /api/v1/ipd/admit`
+   - **Query Params:** `patientId`, `doctorId`, `bedId`, `departmentId`
+   - **Internal Logic:** The system marks the `Bed` as `OCCUPIED` and creates an `Admission` record.
+2. **Verify Bed Status:**
+   - `GET /api/v1/ipd/beds/{bedId}` should now show `status: OCCUPIED`.
+
+### Phase 3: Daily Care & Discharge (Surgery Patient Example - 8 Days)
+This covers a complete surgery admission workflow:
+
+**Day 1-3: Pre-Operative Care**
+1. **Daily Nurse Vitals:**
+   - **Endpoint:** `POST /api/v1/clinical/vitals`
+   - Record BP, Temp, SpO2, Pulse twice daily (morning & evening)
+   - Link to admission via `admissionId` parameter
+2. **Daily Doctor Check:**
+   - Doctor adds notes via DoctorNote / EMR
+3. **Nursing Notes:**
+   - **Endpoint:** `POST /api/v1/clinical/nursing-note?admissionId={id}`
+
+**Day 4: Operation Day**
+1. **Book OT:**
+   - **Endpoint:** `POST /api/v1/clinical/ot/book` (or similar)
+   - Create OTBooking with surgeon, anesthetist, procedure name, schedule
+2. **Update OT Status:**
+   - Mark as IN_PROGRESS during surgery
+   - Mark as COMPLETED after surgery
+
+**Day 5-7: Post-Operative Care**
+1. **Daily Medications/Injections:**
+   - **Endpoint:** Doctor prescribes via ClinicalPrescription
+   - Set frequency (1-0-1, 0-1-0, etc.)
+   - Set route (Oral, IV, IM)
+2. **Continue Daily Vitals & Nursing Notes**
+   - Monitor recovery vitals more frequently if needed
+
+**Day 8: Discharge**
+1. **Discharge Summary:**
+   - Create DischargeSummary with all medications, follow-up dates
+2. **Final Discharge:**
+   - **Endpoint:** `POST /api/v1/ipd/discharge/{admissionId}`
+   - **Internal Logic:** Marks admission as `DISCHARGED` and automatically sets the bed back to `AVAILABLE`.
+
+---
+
+## 👨‍👩‍👧 6. Advanced Scenarios: Family Mapping & Duplicates
+
+The system handles patient identity with intelligence to prevent duplicate records.
+
+### Case 1: Returning Patient (Same Phone Number)
+- **Scenario:** A patient who visited 6 months ago returns.
+- **System Behavior:** When using `POST /api/v1/patients/patient-register` with the same mobile number, the system will **not** create a new patient. It will link the new `OPD_VISIT` to the existing `Patient` record.
+- **Verification:** Check that the `UHID` remains the same in the response.
+
+### Case 2: Family Mapping (Siblings/Spouse)
+- **Scenario:** Registering a child whose father is already a patient.
+- **Step 1:** Get the `patientId` of the father (Family Head).
+- **Step 2:** Use `POST /api/v1/patients/register` with `familyHeadId` in the body.
+- **Body Example:**
+  ```json
+  {
+    "firstName": "Junior",
+    "lastName": "Doe",
+    "phoneNumber": "9876543210",
+    "familyHeadId": 1
+  }
+  ```
+- **Verification:** Call `GET /api/v1/patients/{id}/family` to see all members linked to the head.
+
+---
+
+## 🔍 7. Internal Workings & Data Integrity
+
+### Multi-Tenancy (SaaS Isolation)
+The system uses a **Shared Database, Shared Schema** approach with Discriminator Columns.
+- Every table has `hospital_id` and `branch_id`.
+- The `TenantFilter` intercepts every request, extracts the tenant info from JWT, and stores it in `TenantContext`.
+- **Testing Tip:** Try to access a `patientId` belonging to Hospital A using a token from Hospital B. The system should return `404 Not Found` or `Access Denied`.
+
+### The "Two Ways" OPD Solution Resolved
+The user interface usually chooses the flow:
+- **Reception Desk:** Uses **Approach A** (`patient-register`) for new walk-ins to save time.
+- **Call Center/Online:** Uses **Approach B** (`appointments`) for future bookings.
+Both flows converge at the `OPD_VISIT` entity, ensuring that the Doctor's Dashboard looks the same regardless of how the patient arrived.
+
+---
+
+## 🛠️ 8. Interactive Step-by-Step Test Scenarios
+
+### Scenario 1: The "New Walk-in" (Zero to Hero)
+1. **Action:** Call `POST /api/v1/patients/patient-register`
+   - **Data:** Name: "Alice Smith", Mobile: "1122334455", VisitType: "OPD", DoctorId: 1
+2. **Expectation:** Response contains a `UHID` and an `opdVisitId`.
+3. **Action:** Call `POST /api/v1/opd/vitals/{opdVisitId}`
+   - **Data:** BP: "110/70", Temp: "98.4"
+4. **Action:** Call `POST /api/v1/clinical/emr`
+   - **Data:** Diagnosis: "Seasonal Allergy"
+
+### Scenario 2: The "Planned Appointment"
+1. **Action:** Call `POST /api/v1/patients/register`
+   - **Data:** Name: "Bob Brown", Mobile: "5544332211" (Save `patientId`)
+2. **Action:** Call `POST /api/v1/appointments`
+   - **Data:** PatientId: {Bob's ID}, DoctorId: 1, Date: {Today} (Save `appointmentId`)
+3. **Action:** Call `POST /api/v1/opd/check-in/{appointmentId}`
+4. **Expectation:** An `OPDVisit` is created. Appointment status changes to `CONFIRMED`.
+
+### Scenario 3: Emergency to IPD
+1. **Action:** Call `POST /api/v1/patients/patient-register`
+   - **Data:** VisitType: "Emergency"
+2. **Action:** Call `POST /api/v1/ipd/admit`
+   - **Data:** PatientId, DoctorId, BedId (Make sure bed is `AVAILABLE` first)
+3. **Action:** Verify bed status is now `OCCUPIED`.
+
+---
+
+## 🧪 9. Testing Checklist for Accuracy
+- [ ] **Auth:** Is the JWT token present in the header?
+- [ ] **Vitals:** Are vitals appearing in the EMR after being saved in OPD?
+- [ ] **Bed Lock:** Does admitting a patient to Bed #101 prevent another admission to the same bed?
+- [ ] **UHID Consistency:** Does registering the same mobile number twice reuse the existing UHID? (Check `PatientRegistrationRequest` logic).
+
+---
+
+## 🚀 10. Pro-Tip: Fast Testing with Seed Data
+We have already run the migrations and seeded the database with dummy data.
+- **Default Admin:** `admin` / `password`
+- **Check Seeded Patients:** `GET /api/v1/patients`
+- **Check Seeded Doctors:** `GET /api/v1/doctors` (if available)
+
+Use these existing IDs to skip the registration steps and jump straight to **OPD Check-in** or **IPD Admission**.

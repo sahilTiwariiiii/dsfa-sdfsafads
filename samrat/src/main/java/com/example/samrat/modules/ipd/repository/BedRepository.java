@@ -11,4 +11,5 @@ public interface BedRepository extends JpaRepository<Bed, Long> {
     Page<Bed> findByHospitalIdAndBranchId(Long hospitalId, Long branchId, Pageable pageable);
     List<Bed> findByWardId(Long wardId);
     List<Bed> findByWardIdAndStatus(Long wardId, Bed.BedStatus status);
+    Bed findByIdAndHospitalIdAndBranchId(Long bedId, Long hospitalId, Long branchId);
 }

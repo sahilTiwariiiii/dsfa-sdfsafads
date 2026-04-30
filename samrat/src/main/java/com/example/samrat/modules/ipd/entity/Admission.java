@@ -3,6 +3,7 @@ package com.example.samrat.modules.ipd.entity;
 import com.example.samrat.core.entity.BaseEntity;
 import com.example.samrat.modules.doctor.entity.Doctor;
 import com.example.samrat.modules.patient.entity.Patient;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @Table(name = "admissions")
 @Getter
 @Setter
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Admission extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)

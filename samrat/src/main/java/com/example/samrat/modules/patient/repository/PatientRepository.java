@@ -13,6 +13,7 @@ import java.util.Optional;
 public interface PatientRepository extends JpaRepository<Patient, Long> {
     List<Patient> findByHospitalIdAndBranchIdAndPhoneNumber(Long hospitalId, Long branchId, String phoneNumber);
     Optional<Patient> findByHospitalIdAndBranchIdAndUhid(Long hospitalId, Long branchId, String uhid);
+    Optional<Patient> findByIdAndHospitalIdAndBranchId(Long id, Long hospitalId, Long branchId);
     List<Patient> findByFamilyHeadId(Long familyHeadId);
 
     Page<Patient> findByHospitalIdAndBranchId(Long hospitalId, Long branchId, Pageable pageable);

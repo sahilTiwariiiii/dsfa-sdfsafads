@@ -197,10 +197,14 @@ public class ClinicalService {
         return medicalHistoryRepository.findByPatientId(patientId, pageable);
     }
 
-    // --- Personal History ---
+    // --- Addiction / Personal History ---
     @Transactional
     public PersonalHistory addPersonalHistory(PersonalHistory history, Long patientId) {
-        history.setPatient(patientRepository.findById(patientId).orElseThrow(() -> new RuntimeException("Patient not found")));
+        if (patientId != null) {
+            history.setPatient(patientRepository.findById(patientId).orElseThrow(() -> new RuntimeException("Patient not found")));
+        } else if (history.getPatient() != null && history.getPatient().getId() != null) {
+            history.setPatient(patientRepository.findById(history.getPatient().getId()).orElseThrow(() -> new RuntimeException("Patient not found")));
+        }
         history.setHospitalId(TenantContext.getHospitalId());
         history.setBranchId(TenantContext.getBranchId());
         return personalHistoryRepository.save(history);
@@ -210,11 +214,14 @@ public class ClinicalService {
         return personalHistoryRepository.findByPatientId(patientId, pageable);
     }
 
-    // --- Clinical Diagnosis ---
     @Transactional
     public ClinicalDiagnosis addDiagnosis(ClinicalDiagnosis diagnosis, Long patientId, Long doctorId, Long visitId) {
-        diagnosis.setPatient(patientRepository.findById(patientId).orElseThrow(() -> new RuntimeException("Patient not found")));
-        diagnosis.setDoctor(doctorRepository.findById(doctorId).orElseThrow(() -> new RuntimeException("Doctor not found")));
+        if (patientId != null) {
+            diagnosis.setPatient(patientRepository.findById(patientId).orElseThrow(() -> new RuntimeException("Patient not found")));
+        }
+        if (doctorId != null) {
+            diagnosis.setDoctor(doctorRepository.findById(doctorId).orElseThrow(() -> new RuntimeException("Doctor not found")));
+        }
         if (visitId != null) {
             diagnosis.setVisit(opdVisitRepository.findById(visitId).orElseThrow(() -> new RuntimeException("Visit not found")));
         }

@@ -9,6 +9,8 @@ import com.example.samrat.modules.opd.dto.OPDVisitDTO;
 import com.example.samrat.modules.opd.entity.OPDVisit;
 import com.example.samrat.modules.opd.repository.OPDVisitRepository;
 import com.example.samrat.modules.patient.repository.PatientRepository;
+import com.example.samrat.modules.clinical.vitals.dto.PatientVitalDTO;
+import com.example.samrat.modules.clinical.vitals.service.PatientVitalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +29,7 @@ public class OPDVisitService {
     private final PatientRepository patientRepository;
     private final DoctorRepository doctorRepository;
     private final DepartmentRepository departmentRepository;
+    private final PatientVitalService patientVitalService;
 
     @Transactional
     public OPDVisitDTO checkIn(Long appointmentId) {
@@ -106,6 +109,8 @@ public class OPDVisitService {
     @Transactional
     public OPDVisitDTO recordVitals(Long opdVisitId, Double weight, Double height, String bp, Double temp, Integer pulse, Integer resp, Integer spo2) {
         OPDVisit opdVisit = getVisitEntityById(opdVisitId);
+        
+        // 1. Update the visit record (for legacy/current dashboard view)
         opdVisit.setWeight(weight);
         opdVisit.setHeight(height);
         opdVisit.setBloodPressure(bp);
@@ -113,6 +118,23 @@ public class OPDVisitService {
         opdVisit.setPulseRate(pulse);
         opdVisit.setRespiratoryRate(resp);
         opdVisit.setSpo2(spo2);
+        
+        // 2. Save to historical vitals table
+        PatientVitalDTO historicalVital = new PatientVitalDTO();
+        historicalVital.setPatientId(opdVisit.getPatient().getId());
+        historicalVital.setOpdVisitId(opdVisitId);
+        historicalVital.setWeight(weight);
+        historicalVital.setHeight(height);
+        historicalVital.setBloodPressure(bp);
+        historicalVital.setTemperature(temp);
+        historicalVital.setPulseRate(pulse);
+        historicalVital.setRespiratoryRate(resp);
+        historicalVital.setSpo2(spo2);
+        historicalVital.setRecordedAt(LocalDateTime.now());
+        historicalVital.setRemark("Recorded during OPD Visit");
+        
+        patientVitalService.recordVitals(historicalVital);
+        
         return toDTO(opdVisitRepository.save(opdVisit));
     }
 

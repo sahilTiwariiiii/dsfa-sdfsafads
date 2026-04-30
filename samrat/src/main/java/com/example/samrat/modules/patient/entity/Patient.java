@@ -8,7 +8,9 @@ import lombok.Setter;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "patients")
+@Table(name = "patients", uniqueConstraints = {
+    @UniqueConstraint(name = "uk_patient_hospital_branch_phone", columnNames = {"hospital_id", "branch_id", "phone_number"})
+})
 @Getter
 @Setter
 public class Patient extends BaseEntity {

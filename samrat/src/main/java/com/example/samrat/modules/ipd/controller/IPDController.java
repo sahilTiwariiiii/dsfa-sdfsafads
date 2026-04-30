@@ -1,10 +1,12 @@
 package com.example.samrat.modules.ipd.controller;
 
 import com.example.samrat.core.dto.BaseResponse;
+import com.example.samrat.modules.ipd.dto.AdmissionRequest;
 import com.example.samrat.modules.ipd.entity.Admission;
 import com.example.samrat.modules.ipd.entity.Bed;
 import com.example.samrat.modules.ipd.entity.Ward;
 import com.example.samrat.modules.ipd.service.IPDService;
+import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -105,18 +107,21 @@ public class IPDController {
         return ResponseEntity.ok(new BaseResponse<>(true, "Available beds found", null, ipdService.getAvailableBedsByWard(wardId)));
     }
 
+    @GetMapping("/beds/{bedId}")
+    @PreAuthorize("hasAuthority('IPD_READ')")
+    @Operation(summary = "Get bed by ID")
+    public ResponseEntity<BaseResponse<Bed>> getBedById(@PathVariable Long bedId) {
+        return ResponseEntity.ok(new BaseResponse<>(true, "Bed found", null, ipdService.getBedById(bedId)));
+    }
+
     // --- Admission Management ---
 
     @PostMapping("/admit")
     @PreAuthorize("hasAuthority('IPD_WRITE')")
     @Operation(summary = "Admit patient", description = "Admits a patient to a specific bed under a doctor's care")
     public ResponseEntity<BaseResponse<Admission>> admitPatient(
-            @RequestBody Admission admission,
-            @RequestParam Long patientId,
-            @RequestParam Long doctorId,
-            @RequestParam Long bedId,
-            @RequestParam(required = false) Long departmentId) {
-        Admission created = ipdService.admitPatient(admission, patientId, doctorId, bedId, departmentId);
+            @Valid @RequestBody AdmissionRequest request) {
+        Admission created = ipdService.admitPatient(request);
         return ResponseEntity.ok(new BaseResponse<>(true, "Patient admitted successfully", null, created));
     }
 

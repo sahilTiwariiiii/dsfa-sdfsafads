@@ -1,6 +1,7 @@
 package com.example.samrat.modules.ipd.entity;
 
 import com.example.samrat.core.entity.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,6 +13,7 @@ import java.util.Set;
 @Table(name = "wards")
 @Getter
 @Setter
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Ward extends BaseEntity {
 
     @Column(nullable = false)

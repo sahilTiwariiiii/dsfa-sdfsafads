@@ -50,9 +50,15 @@ public class PatientService {
 
         // Map fields from request to entity
         if (existing == null) {
-            String[] nameParts = request.getPatientName().split(" ");
-            patient.setFirstName(nameParts[0]);
-            patient.setLastName(nameParts.length > 1 ? nameParts[1] : "");
+            String fullName = request.getPatientName().trim();
+            int firstSpace = fullName.indexOf(" ");
+            if (firstSpace != -1) {
+                patient.setFirstName(fullName.substring(0, firstSpace));
+                patient.setLastName(fullName.substring(firstSpace + 1).trim());
+            } else {
+                patient.setFirstName(fullName);
+                patient.setLastName("");
+            }
             patient.setGender(request.getGender());
             patient.setPhoneNumber(request.getMobile());
             patient.setEmail(request.getEmail());
@@ -62,7 +68,11 @@ public class PatientService {
             patient.setGuardianName(request.getGuardianName());
         
             if (request.getDob() != null && !request.getDob().isEmpty()) {
-                patient.setDateOfBirth(LocalDate.parse(request.getDob()));
+                try {
+                    patient.setDateOfBirth(LocalDate.parse(request.getDob()));
+                } catch (Exception e) {
+                    // Fallback or ignore invalid date
+                }
             }
 
             patient.setHospitalId(tenant.hospitalId());
@@ -76,37 +86,40 @@ public class PatientService {
         }
 
         // If visit type is OPD, create an OPD visit
-        if ("OPD".equalsIgnoreCase(request.getVisitType())) {
+        if ("OPD".equalsIgnoreCase(request.getVisitType()) || "Emergency".equalsIgnoreCase(request.getVisitType())) {
             OPDVisit opdVisit = new OPDVisit();
             opdVisit.setPatient(patient);
             
-            if (request.getDoctorId() != null) {
-                // Assuming doctorId in request is Long, if it's String we need to parse it
+            if (request.getDoctorId() != null && !request.getDoctorId().isBlank()) {
                 try {
                     Long docId = Long.parseLong(request.getDoctorId());
                     opdVisit.setDoctor(doctorRepository.findById(docId).orElse(null));
                 } catch (NumberFormatException e) {
-                    // Ignore or handle
+                    // Handle non-numeric IDs if necessary
                 }
             }
             
-            if (request.getDepartmentId() != null) {
+            if (request.getDepartmentId() != null && !request.getDepartmentId().isBlank()) {
                 try {
                     Long deptId = Long.parseLong(request.getDepartmentId());
                     opdVisit.setDepartment(departmentRepository.findById(deptId).orElse(null));
                 } catch (NumberFormatException e) {
-                    // Ignore or handle
+                    // Handle non-numeric IDs
                 }
             }
 
-            opdVisit.setVisitTime(LocalDateTime.now());
+            // Use visitDate from request if available, otherwise fallback to now
+            LocalDateTime visitDateTime = request.getVisitDate() != null ? request.getVisitDate() : LocalDateTime.now();
+            opdVisit.setVisitTime(visitDateTime);
+            
             opdVisit.setVisitType(request.getVisitType());
             opdVisit.setSlot(request.getSlot());
             opdVisit.setFee(request.getFee());
-            opdVisit.setTokenNumber("WALK-IN-" + System.currentTimeMillis() % 1000);
+            opdVisit.setTokenNumber((request.getVisitType().startsWith("E") ? "EMR-" : "WALK-IN-") + System.currentTimeMillis() % 1000);
             opdVisit.setStatus(OPDVisit.VisitStatus.WAITING);
             opdVisit.setHospitalId(tenant.hospitalId());
             opdVisit.setBranchId(tenant.branchId());
+            opdVisit.setSource(request.getSource() != null ? request.getSource() : "Walk-in");
 
             opdVisitRepository.save(opdVisit);
         }

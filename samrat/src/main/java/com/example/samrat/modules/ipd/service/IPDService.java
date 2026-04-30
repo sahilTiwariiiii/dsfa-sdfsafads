@@ -4,6 +4,7 @@ import com.example.samrat.core.context.TenantContext;
 import com.example.samrat.modules.admin.repository.DepartmentRepository;
 import com.example.samrat.modules.doctor.entity.Doctor;
 import com.example.samrat.modules.doctor.repository.DoctorRepository;
+import com.example.samrat.modules.ipd.dto.AdmissionRequest;
 import com.example.samrat.modules.ipd.entity.Admission;
 import com.example.samrat.modules.ipd.entity.Bed;
 import com.example.samrat.modules.ipd.entity.Ward;
@@ -68,16 +69,89 @@ public class IPDService {
         return bedRepository.findByWardIdAndStatus(wardId, Bed.BedStatus.AVAILABLE);
     }
 
+    public Bed getBedById(Long bedId) {
+        Bed bed = bedRepository.findByIdAndHospitalIdAndBranchId(bedId, TenantContext.getHospitalId(), TenantContext.getBranchId());
+        if (bed == null) {
+            throw new RuntimeException("Bed not found");
+        }
+        return bed;
+    }
+
     // --- Admission Management ---
 
     @Transactional
-    public Admission admitPatient(Admission admission, Long patientId, Long doctorId, Long bedId, Long departmentId) {
-        Patient patient = patientRepository.findById(patientId)
+    public Admission admitPatient(AdmissionRequest request) {
+        return admitPatient(request.getPatientId(), request.getDoctorId(), request.getBedId(), request.getDepartmentId(), request);
+    }
+
+    @Transactional
+    public Admission admitPatient(Long patientId, Long doctorId, Long bedId, Long departmentId, AdmissionRequest request) {
+        Patient patient = patientRepository.findByIdAndHospitalIdAndBranchId(patientId, TenantContext.getHospitalId(), TenantContext.getBranchId())
                 .orElseThrow(() -> new RuntimeException("Patient not found"));
-        Doctor doctor = doctorRepository.findById(doctorId)
+        Doctor doctor = doctorRepository.findByIdAndHospitalId(doctorId, TenantContext.getHospitalId())
                 .orElseThrow(() -> new RuntimeException("Doctor not found"));
-        Bed bed = bedRepository.findById(bedId)
-                .orElseThrow(() -> new RuntimeException("Bed not found"));
+        Bed bed = bedRepository.findByIdAndHospitalIdAndBranchId(bedId, TenantContext.getHospitalId(), TenantContext.getBranchId());
+        if (bed == null) {
+            throw new RuntimeException("Bed not found");
+        }
+
+        admissionRepository.findActiveByPatientId(TenantContext.getHospitalId(), TenantContext.getBranchId(), patientId)
+                .ifPresent(activeAdmission -> {
+                    throw new RuntimeException("Patient already has an active admission (IPD number: " + activeAdmission.getIpdNumber() + ")");
+                });
+
+        if (bed.getStatus() != Bed.BedStatus.AVAILABLE) {
+            throw new RuntimeException("Bed is not available");
+        }
+
+        Admission admission = new Admission();
+        if (request != null) {
+            admission.setCaseType(request.getCaseType());
+            admission.setTriage(request.getTriage());
+            admission.setGuardianName(request.getGuardianName());
+            admission.setGuardianPhone(request.getGuardianPhone());
+            admission.setGuardianRelation(request.getGuardianRelation());
+            admission.setInsuranceProvider(request.getInsuranceProvider());
+            admission.setPolicyNumber(request.getPolicyNumber());
+            admission.setDiagnosis(request.getDiagnosis());
+            admission.setAdmissionReason(request.getAdmissionReason());
+            admission.setAdvanceAmount(request.getAdvanceAmount());
+        }
+
+        admission.setPatient(patient);
+        admission.setAdmittingDoctor(doctor);
+        admission.setPrimaryDoctor(doctor);
+        admission.setBed(bed);
+        if (departmentId != null) {
+            admission.setDepartment(departmentRepository.findById(departmentId).orElseThrow(() -> new RuntimeException("Department not found")));
+        }
+        admission.setAdmissionDate(LocalDateTime.now());
+        admission.setIpdNumber("IPD-" + System.currentTimeMillis() % 1000000);
+        admission.setStatus(AdmissionStatus.ADMITTED);
+        admission.setHospitalId(TenantContext.getHospitalId());
+        admission.setBranchId(TenantContext.getBranchId());
+
+        bed.setStatus(Bed.BedStatus.OCCUPIED);
+        bedRepository.save(bed);
+
+        return admissionRepository.save(admission);
+    }
+
+    @Transactional
+    public Admission admitPatient(Admission admission, Long patientId, Long doctorId, Long bedId, Long departmentId) {
+        Patient patient = patientRepository.findByIdAndHospitalIdAndBranchId(patientId, TenantContext.getHospitalId(), TenantContext.getBranchId())
+                .orElseThrow(() -> new RuntimeException("Patient not found"));
+        Doctor doctor = doctorRepository.findByIdAndHospitalId(doctorId, TenantContext.getHospitalId())
+                .orElseThrow(() -> new RuntimeException("Doctor not found"));
+        Bed bed = bedRepository.findByIdAndHospitalIdAndBranchId(bedId, TenantContext.getHospitalId(), TenantContext.getBranchId());
+        if (bed == null) {
+            throw new RuntimeException("Bed not found");
+        }
+
+        admissionRepository.findActiveByPatientId(TenantContext.getHospitalId(), TenantContext.getBranchId(), patientId)
+                .ifPresent(activeAdmission -> {
+                    throw new RuntimeException("Patient already has an active admission (IPD number: " + activeAdmission.getIpdNumber() + ")");
+                });
 
         if (bed.getStatus() != Bed.BedStatus.AVAILABLE) {
             throw new RuntimeException("Bed is not available");
