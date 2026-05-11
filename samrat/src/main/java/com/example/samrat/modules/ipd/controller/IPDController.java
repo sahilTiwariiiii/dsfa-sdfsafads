@@ -31,7 +31,7 @@ public class IPDController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('IPD_READ')")
-    @Operation(summary = "Get all admissions", description = "Retrieves a paginated list of all IPD admissions")
+    @Operation(summary = "Method Summary", description = "Retrieves a paginated list of all IPD admissions")
     public ResponseEntity<BaseResponse<Page<Admission>>> listIpdV1(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -41,7 +41,7 @@ public class IPDController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('IPD_READ')")
-    @Operation(summary = "Get admission by ID")
+    @Operation(summary = "Method Summary")
     public ResponseEntity<BaseResponse<Admission>> getIpdByIdV1(@PathVariable Long id) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Detail", null, ipdService.getAdmissionById(id)));
     }
@@ -56,7 +56,7 @@ public class IPDController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('IPD_DELETE')")
-    @Operation(summary = "Delete admission")
+    @Operation(summary = "Method Summary")
     public ResponseEntity<BaseResponse<Void>> deleteIpdV1(@PathVariable Long id) {
         ipdService.deleteAdmission(id);
         return ResponseEntity.ok(new BaseResponse<>(true, "Deleted", null, null));
@@ -73,7 +73,7 @@ public class IPDController {
 
     @GetMapping("/wards")
     @PreAuthorize("hasAuthority('IPD_READ')")
-    @Operation(summary = "Get all wards")
+    @Operation(summary = "Method Summary")
     public ResponseEntity<BaseResponse<Page<Ward>>> getAllWards(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -92,7 +92,7 @@ public class IPDController {
 
     @GetMapping("/beds")
     @PreAuthorize("hasAuthority('IPD_READ')")
-    @Operation(summary = "Get all beds")
+    @Operation(summary = "Method Summary")
     public ResponseEntity<BaseResponse<Page<Bed>>> getAllBeds(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -102,14 +102,14 @@ public class IPDController {
 
     @GetMapping("/beds/available")
     @PreAuthorize("hasAuthority('IPD_READ')")
-    @Operation(summary = "Get available beds by ward")
+    @Operation(summary = "Method Summary")
     public ResponseEntity<BaseResponse<List<Bed>>> getAvailableBeds(@RequestParam Long wardId) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Available beds found", null, ipdService.getAvailableBedsByWard(wardId)));
     }
 
     @GetMapping("/beds/{bedId}")
     @PreAuthorize("hasAuthority('IPD_READ')")
-    @Operation(summary = "Get bed by ID")
+    @Operation(summary = "Method Summary")
     public ResponseEntity<BaseResponse<Bed>> getBedById(@PathVariable Long bedId) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Bed found", null, ipdService.getBedById(bedId)));
     }
@@ -158,3 +158,4 @@ public class IPDController {
         return ResponseEntity.ok(new BaseResponse<>(true, "Bed transferred successfully", null, ipdService.transferBed(admissionId, newBedId)));
     }
 }
+

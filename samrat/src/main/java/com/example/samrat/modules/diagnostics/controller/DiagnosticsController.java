@@ -50,7 +50,7 @@ public class DiagnosticsController {
 
     @GetMapping("/lab/{id}")
     @Tag(name = "V1 - labRoute")
-    @Operation(summary = "Get V1 - labRoute by ID")
+    @Operation(summary = "Method Summary")
     public ResponseEntity<BaseResponse<LabOrder>> getLabByIdV1(@PathVariable Long id) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Detail", null, diagnosticsService.getLabOrderById(id)));
     }
@@ -64,7 +64,7 @@ public class DiagnosticsController {
 
     @DeleteMapping("/lab/{id}")
     @Tag(name = "V1 - labRoute")
-    @Operation(summary = "Delete V1 - labRoute")
+    @Operation(summary = "Method Summary")
     public ResponseEntity<BaseResponse<Void>> deleteLabV1(@PathVariable Long id) {
         diagnosticsService.deleteLabOrder(id);
         return ResponseEntity.ok(new BaseResponse<>(true, "Deleted", null, null));
@@ -96,7 +96,7 @@ public class DiagnosticsController {
 
     @GetMapping("/radiology/{id}")
     @Tag(name = "V1 - radiologyRoute")
-    @Operation(summary = "Get V1 - radiologyRoute by ID")
+    @Operation(summary = "Method Summary")
     public ResponseEntity<BaseResponse<RadiologyOrder>> getRadiologyByIdV1(@PathVariable Long id) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Detail", null, diagnosticsService.getRadiologyOrderById(id)));
     }
@@ -110,7 +110,7 @@ public class DiagnosticsController {
 
     @DeleteMapping("/radiology/{id}")
     @Tag(name = "V1 - radiologyRoute")
-    @Operation(summary = "Delete V1 - radiologyRoute")
+    @Operation(summary = "Method Summary")
     public ResponseEntity<BaseResponse<Void>> deleteRadiologyV1(@PathVariable Long id) {
         diagnosticsService.deleteRadiologyOrder(id);
         return ResponseEntity.ok(new BaseResponse<>(true, "Deleted", null, null));
@@ -196,3 +196,4 @@ public class DiagnosticsController {
         return ResponseEntity.ok(new BaseResponse<>(true, "Radiology report updated successfully", null, order));
     }
 }
+

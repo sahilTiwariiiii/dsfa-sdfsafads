@@ -34,7 +34,7 @@ public class PatientController {
     @PostMapping("/patient-register")
     @PreAuthorize("hasAuthority('PATIENT_CREATE')")
     @Operation(
-            summary = "POST /api/v1/patients/patient-register",
+            summary = "Method Summary",
             description = "Registers a new patient and records their initial visit details",
             responses = {
                     @ApiResponse(
@@ -132,7 +132,7 @@ public class PatientController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('PATIENT_READ')")
-    @Operation(summary = "Get all patients", description = "Retrieves a paginated list of all patients")
+    @Operation(summary = "Method Summary", description = "Retrieves a paginated list of all patients")
     public ResponseEntity<BaseResponse<Page<PatientDTO>>> getAllPatients(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -144,7 +144,7 @@ public class PatientController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('PATIENT_READ')")
-    @Operation(summary = "Get patient by ID", description = "Retrieves a patient's details using their internal database ID")
+    @Operation(summary = "Method Summary", description = "Retrieves a patient's details using their internal database ID")
     public ResponseEntity<BaseResponse<PatientDTO>> getPatientById(@PathVariable Long id) {
         PatientDTO patient = patientService.getPatientById(id);
         return ResponseEntity.ok(new BaseResponse<>(true, "Patient found", null, patient));
@@ -168,7 +168,7 @@ public class PatientController {
 
     @GetMapping("/uhid/{uhid}")
     @PreAuthorize("hasAuthority('PATIENT_READ')")
-    @Operation(summary = "Get patient by UHID", description = "Retrieves a patient's details using their unique hospital ID")
+    @Operation(summary = "Method Summary", description = "Retrieves a patient's details using their unique hospital ID")
     public ResponseEntity<BaseResponse<PatientDTO>> getPatientByUhid(@PathVariable String uhid) {
         PatientDTO patient = patientService.getPatientByUhid(uhid);
         return ResponseEntity.ok(new BaseResponse<>(true, "Patient found", null, patient));
@@ -176,7 +176,7 @@ public class PatientController {
 
     @GetMapping("/{id}/family")
     @PreAuthorize("hasAuthority('PATIENT_READ')")
-    @Operation(summary = "Get family members", description = "Retrieves a list of family members for a specific patient")
+    @Operation(summary = "Method Summary", description = "Retrieves a list of family members for a specific patient")
     public ResponseEntity<BaseResponse<List<PatientDTO>>> getFamilyMembers(@PathVariable Long id) {
         List<PatientDTO> family = patientService.getFamilyMembers(id);
         return ResponseEntity.ok(new BaseResponse<>(true, "Family members found", null, family));
@@ -196,9 +196,10 @@ public class PatientController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('PATIENT_DELETE')")
-    @Operation(summary = "Delete patient", description = "Deletes a patient record")
+    @Operation(summary = "Method Summary", description = "Deletes a patient record")
     public ResponseEntity<BaseResponse<Void>> deletePatient(@PathVariable Long id) {
         patientService.deletePatient(id);
         return ResponseEntity.ok(new BaseResponse<>(true, "Patient deleted successfully", null, null));
     }
 }
+

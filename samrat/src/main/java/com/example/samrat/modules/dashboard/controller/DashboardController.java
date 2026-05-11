@@ -21,7 +21,7 @@ public class DashboardController {
 
     @GetMapping("/doctor/{doctorId}")
     @PreAuthorize("hasAuthority('DOCTOR_READ')")
-    @Operation(summary = "Get Doctor Dashboard", description = "Aggregates appointments, surgeries, and clinical data for a doctor")
+    @Operation(summary = "Method Summary", description = "Aggregates appointments, surgeries, and clinical data for a doctor")
     public ResponseEntity<BaseResponse<DoctorDashboardDTO>> getDoctorDashboard(@PathVariable Long doctorId) {
         DoctorDashboardDTO dashboard = dashboardService.getDoctorDashboard(doctorId);
         return ResponseEntity.ok(new BaseResponse<>(true, "Doctor dashboard data found", null, dashboard));
@@ -29,9 +29,10 @@ public class DashboardController {
 
     @GetMapping("/patient/{uhid}")
     @PreAuthorize("hasAuthority('PATIENT_READ')")
-    @Operation(summary = "Get Patient Portal Data", description = "Aggregates medical records, appointments, and billing for a patient")
+    @Operation(summary = "Method Summary", description = "Aggregates medical records, appointments, and billing for a patient")
     public ResponseEntity<BaseResponse<PatientPortalDTO>> getPatientPortal(@PathVariable String uhid) {
         PatientPortalDTO portal = dashboardService.getPatientPortalData(uhid);
         return ResponseEntity.ok(new BaseResponse<>(true, "Patient portal data found", null, portal));
     }
 }
+

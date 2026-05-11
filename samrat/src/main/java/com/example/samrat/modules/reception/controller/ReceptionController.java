@@ -38,9 +38,10 @@ public class ReceptionController {
 
     @GetMapping("/visitors/active")
     @PreAuthorize("hasAuthority('RECEPTION_READ')")
-    @Operation(summary = "Get active visitors", description = "Lists all visitors currently inside the hospital")
+    @Operation(summary = "Method Summary", description = "Lists all visitors currently inside the hospital")
     public ResponseEntity<BaseResponse<List<VisitorLog>>> getActiveVisitors() {
         List<VisitorLog> visitors = receptionService.getActiveVisitors();
         return ResponseEntity.ok(new BaseResponse<>(true, "Active visitors found", null, visitors));
     }
 }
+

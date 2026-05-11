@@ -35,9 +35,10 @@ public class FinanceController {
 
     @GetMapping("/transactions")
     @PreAuthorize("hasAuthority('FINANCE_READ')")
-    @Operation(summary = "Get all transactions", description = "Retrieves all financial records for the current hospital branch")
+    @Operation(summary = "Method Summary", description = "Retrieves all financial records for the current hospital branch")
     public ResponseEntity<BaseResponse<List<FinancialTransaction>>> getAllTransactions() {
         List<FinancialTransaction> transactions = financeService.getAllTransactions();
         return ResponseEntity.ok(new BaseResponse<>(true, "Transactions found", null, transactions));
     }
 }
+

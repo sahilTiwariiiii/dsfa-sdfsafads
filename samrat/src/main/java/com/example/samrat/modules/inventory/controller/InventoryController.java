@@ -31,7 +31,7 @@ public class InventoryController {
 
     @GetMapping("/pharmacy/stock")
     @PreAuthorize("hasAuthority('INVENTORY_READ')")
-    @Operation(summary = "Get all stock", description = "Retrieves all items currently in the pharmacy inventory")
+    @Operation(summary = "Method Summary", description = "Retrieves all items currently in the pharmacy inventory")
     public ResponseEntity<BaseResponse<Page<PharmacyStock>>> getAllStock(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -66,9 +66,10 @@ public class InventoryController {
 
     @DeleteMapping("/pharmacy/stock/{id}")
     @PreAuthorize("hasAuthority('INVENTORY_DELETE')")
-    @Operation(summary = "Delete pharmacy stock", description = "Removes a stock item from the pharmacy inventory")
+    @Operation(summary = "Method Summary", description = "Removes a stock item from the pharmacy inventory")
     public ResponseEntity<BaseResponse<Void>> deleteStock(@PathVariable Long id) {
         inventoryService.deleteStock(id);
         return ResponseEntity.ok(new BaseResponse<>(true, "Stock deleted successfully", null, null));
     }
 }
+

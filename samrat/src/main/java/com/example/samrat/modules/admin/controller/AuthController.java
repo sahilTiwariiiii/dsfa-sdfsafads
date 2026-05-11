@@ -43,7 +43,7 @@ public class AuthController {
 
     @PostMapping("/register")
     @Operation(
-            summary = "POST /api/v1/register",
+            summary = "Register user",
             description = "Registers a new user account in the system",
             responses = {
                     @ApiResponse(
@@ -108,7 +108,7 @@ public class AuthController {
 
     @PostMapping("/login")
     @Operation(
-            summary = "POST /api/v1/login",
+            summary = "Login user",
             description = "Authenticates a user and returns a JWT token",
             responses = {
                     @ApiResponse(
@@ -145,7 +145,7 @@ public class AuthController {
 
     @GetMapping("/users")
     @Operation(
-            summary = "GET /api/v1/users",
+            summary = "Method Summary",
             description = "Retrieves a list of all registered users",
             responses = {
                     @ApiResponse(
@@ -180,3 +180,4 @@ public class AuthController {
         return userRepository.findByUsernameAndActiveTrue(username);
     }
 }
+

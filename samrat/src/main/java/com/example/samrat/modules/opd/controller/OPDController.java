@@ -51,7 +51,7 @@ public class OPDController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('OPD_READ')")
-    @Operation(summary = "Get all OPD visits", description = "Retrieves a paginated list of all OPD visits")
+    @Operation(summary = "Method Summary", description = "Retrieves a paginated list of all OPD visits")
     public ResponseEntity<BaseResponse<Page<OPDVisitDTO>>> getAllVisits(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -79,7 +79,7 @@ public class OPDController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('OPD_READ')")
-    @Operation(summary = "Get OPD visit by ID", description = "Retrieves details of a specific OPD visit")
+    @Operation(summary = "Method Summary", description = "Retrieves details of a specific OPD visit")
     public ResponseEntity<BaseResponse<OPDVisitDTO>> getVisitById(@PathVariable Long id) {
         OPDVisitDTO visit = opdVisitService.getVisitById(id);
         return ResponseEntity.ok(new BaseResponse<>(true, "Visit found", null, visit));
@@ -114,9 +114,10 @@ public class OPDController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('OPD_DELETE')")
-    @Operation(summary = "Delete OPD visit", description = "Deletes an OPD visit record")
+    @Operation(summary = "Method Summary", description = "Deletes an OPD visit record")
     public ResponseEntity<BaseResponse<Void>> deleteVisit(@PathVariable Long id) {
         opdVisitService.deleteVisit(id);
         return ResponseEntity.ok(new BaseResponse<>(true, "Visit deleted successfully", null, null));
     }
 }
+

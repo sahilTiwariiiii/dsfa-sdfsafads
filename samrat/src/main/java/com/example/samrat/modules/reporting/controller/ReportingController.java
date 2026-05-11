@@ -34,9 +34,10 @@ public class ReportingController {
 
     @GetMapping("/list")
     @PreAuthorize("hasAuthority('REPORT_READ')")
-    @Operation(summary = "Get all reports", description = "Retrieves a list of all reports generated for the current hospital")
+    @Operation(summary = "Method Summary", description = "Retrieves a list of all reports generated for the current hospital")
     public ResponseEntity<BaseResponse<List<SystemReport>>> getReports() {
         List<SystemReport> reports = reportingService.getReports();
         return ResponseEntity.ok(new BaseResponse<>(true, "Reports found", null, reports));
     }
 }
+

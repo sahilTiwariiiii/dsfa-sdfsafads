@@ -22,7 +22,7 @@ public class NurseController {
 
     @GetMapping("/available")
     @PreAuthorize("hasAuthority('NURSE_READ')")
-    @Operation(summary = "Get available nurses", description = "Retrieves a list of nurses currently available")
+    @Operation(summary = "Method Summary", description = "Retrieves a list of nurses currently available")
     public ResponseEntity<BaseResponse<List<NurseDTO>>> getAvailableNurses() {
         List<NurseDTO> nurses = nurseService.getAvailableNurses();
         return ResponseEntity.ok(new BaseResponse<>(true, "Available nurses found", null, nurses));
@@ -30,7 +30,7 @@ public class NurseController {
 
     @GetMapping("/department/{departmentId}")
     @PreAuthorize("hasAuthority('NURSE_READ')")
-    @Operation(summary = "Get nurses by department", description = "Finds nurses based on their department")
+    @Operation(summary = "Method Summary", description = "Finds nurses based on their department")
     public ResponseEntity<BaseResponse<List<NurseDTO>>> getNursesByDepartment(@PathVariable Long departmentId) {
         List<NurseDTO> nurses = nurseService.getNursesByDepartment(departmentId);
         return ResponseEntity.ok(new BaseResponse<>(true, "Nurses found for department", null, nurses));
@@ -38,9 +38,10 @@ public class NurseController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('NURSE_READ')")
-    @Operation(summary = "Get nurse by ID", description = "Retrieves a nurse's details using their ID")
+    @Operation(summary = "Method Summary", description = "Retrieves a nurse's details using their ID")
     public ResponseEntity<BaseResponse<NurseDTO>> getNurseById(@PathVariable Long id) {
         NurseDTO nurse = nurseService.getNurseById(id);
         return ResponseEntity.ok(new BaseResponse<>(true, "Nurse found", null, nurse));
     }
 }
+

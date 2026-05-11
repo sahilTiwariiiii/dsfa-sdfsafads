@@ -28,7 +28,7 @@ public class AppointmentController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('APPOINTMENT_READ')")
-    @Operation(summary = "Get all appointments", description = "Retrieves a paginated list of all appointments")
+    @Operation(summary = "Method Summary", description = "Retrieves a paginated list of all appointments")
     public ResponseEntity<BaseResponse<Page<AppointmentDTO>>> listAppointmentsV1(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -56,7 +56,7 @@ public class AppointmentController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('APPOINTMENT_READ')")
-    @Operation(summary = "Get appointment by ID", description = "Retrieves details of a specific appointment")
+    @Operation(summary = "Method Summary", description = "Retrieves details of a specific appointment")
     public ResponseEntity<BaseResponse<AppointmentDTO>> getAppointmentById(@PathVariable Long id) {
         AppointmentDTO appointment = appointmentService.getAppointmentById(id);
         return ResponseEntity.ok(new BaseResponse<>(true, "Appointment found", null, appointment));
@@ -72,7 +72,7 @@ public class AppointmentController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('APPOINTMENT_DELETE')")
-    @Operation(summary = "Delete appointment", description = "Deletes an appointment record")
+    @Operation(summary = "Method Summary", description = "Deletes an appointment record")
     public ResponseEntity<BaseResponse<Void>> deleteAppointment(@PathVariable Long id) {
         appointmentService.deleteAppointment(id);
         return ResponseEntity.ok(new BaseResponse<>(true, "Appointment deleted successfully", null, null));
@@ -91,7 +91,7 @@ public class AppointmentController {
 
     @GetMapping("/daily")
     @PreAuthorize("hasAuthority('APPOINTMENT_READ')")
-    @Operation(summary = "Get daily appointments", description = "Retrieves all appointments scheduled for a specific date")
+    @Operation(summary = "Method Summary", description = "Retrieves all appointments scheduled for a specific date")
     public ResponseEntity<BaseResponse<Page<AppointmentDTO>>> getDailyAppointments(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             @RequestParam(defaultValue = "0") int page,
@@ -103,7 +103,7 @@ public class AppointmentController {
 
     @GetMapping("/patient/{patientId}")
     @PreAuthorize("hasAuthority('APPOINTMENT_READ')")
-    @Operation(summary = "Get patient appointments", description = "Retrieves all appointments for a specific patient")
+    @Operation(summary = "Method Summary", description = "Retrieves all appointments for a specific patient")
     public ResponseEntity<BaseResponse<Page<AppointmentDTO>>> getPatientAppointments(
             @PathVariable Long patientId,
             @RequestParam(defaultValue = "0") int page,
@@ -115,7 +115,7 @@ public class AppointmentController {
 
     @GetMapping("/doctor/{doctorId}")
     @PreAuthorize("hasAuthority('APPOINTMENT_READ')")
-    @Operation(summary = "Get doctor appointments", description = "Retrieves all appointments for a specific doctor")
+    @Operation(summary = "Method Summary", description = "Retrieves all appointments for a specific doctor")
     public ResponseEntity<BaseResponse<Page<AppointmentDTO>>> getDoctorAppointments(
             @PathVariable Long doctorId,
             @RequestParam(defaultValue = "0") int page,
@@ -142,3 +142,4 @@ public class AppointmentController {
         return ResponseEntity.ok(new BaseResponse<>(true, "Search results found", null, appointments));
     }
 }
+

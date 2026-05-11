@@ -21,3 +21,4 @@ public class ApiErrorFallbackController {
                 .body(new BaseResponse<>(false, "You don't have permission to do this action.", "FORBIDDEN", null));
     }
 }
+

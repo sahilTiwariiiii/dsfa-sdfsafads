@@ -27,7 +27,7 @@ public class BillingController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('BILLING_READ')")
-    @Operation(summary = "Get all invoices", description = "Retrieves a paginated list of all invoices")
+    @Operation(summary = "Method Summary", description = "Retrieves a paginated list of all invoices")
     public ResponseEntity<BaseResponse<Page<Invoice>>> listBillingV1(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -37,7 +37,7 @@ public class BillingController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('BILLING_READ')")
-    @Operation(summary = "Get invoice by ID")
+    @Operation(summary = "Method Summary")
     public ResponseEntity<BaseResponse<Invoice>> getBillingByIdV1(@PathVariable Long id) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Detail", null, billingService.getInvoiceById(id)));
     }
@@ -52,7 +52,7 @@ public class BillingController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('BILLING_DELETE')")
-    @Operation(summary = "Delete invoice")
+    @Operation(summary = "Method Summary")
     public ResponseEntity<BaseResponse<Void>> deleteBillingV1(@PathVariable Long id) {
         billingService.deleteInvoice(id);
         return ResponseEntity.ok(new BaseResponse<>(true, "Deleted", null, null));
@@ -69,7 +69,7 @@ public class BillingController {
 
     @GetMapping("/service-charges")
     @PreAuthorize("hasAuthority('BILLING_READ')")
-    @Operation(summary = "Get all service charges")
+    @Operation(summary = "Method Summary")
     public ResponseEntity<BaseResponse<Page<ServiceCharge>>> getAllServiceCharges(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -122,3 +122,4 @@ public class BillingController {
         return ResponseEntity.ok(new BaseResponse<>(true, "Invoice cancelled successfully", null, billingService.cancelInvoice(id)));
     }
 }
+

@@ -25,3 +25,4 @@ public class TelemedicineController {
         return ResponseEntity.ok(new BaseResponse<>(true, "Telemedicine consultation initiated", null, consultation));
     }
 }
+

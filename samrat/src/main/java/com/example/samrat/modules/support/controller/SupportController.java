@@ -30,9 +30,10 @@ public class SupportController {
 
     @GetMapping("/employees")
     @PreAuthorize("hasAuthority('HR_READ')")
-    @Operation(summary = "Get all employees", description = "Retrieves all current employees in the hospital")
+    @Operation(summary = "Method Summary", description = "Retrieves all current employees in the hospital")
     public ResponseEntity<BaseResponse<List<Employee>>> getAllEmployees() {
         List<Employee> employees = supportService.getAllEmployees();
         return ResponseEntity.ok(new BaseResponse<>(true, "Employees found", null, employees));
     }
 }
+

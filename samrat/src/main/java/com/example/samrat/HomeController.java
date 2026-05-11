@@ -13,3 +13,4 @@ public class HomeController {
         return ResponseEntity.ok(new BaseResponse<>(true, "Welcome to Samrat API", null, "Service is running successfully."));
     }
 }
+

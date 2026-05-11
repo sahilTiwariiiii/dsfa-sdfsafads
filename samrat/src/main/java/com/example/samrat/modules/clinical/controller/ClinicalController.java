@@ -173,7 +173,7 @@ public class ClinicalController {
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get V1 - clinicalDetailsRoute by ID")
+    @Operation(summary = "Method Summary")
     public ResponseEntity<BaseResponse<EMRRecordResponseDTO>> getClinicalDetailById(@PathVariable Long id) {
         EMRRecord record = clinicalService.getEMRRecordById(id);
         return ResponseEntity.ok(new BaseResponse<>(true, "Detail", null, toEMRResponseDTO(record)));
@@ -187,7 +187,7 @@ public class ClinicalController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete V1 - clinicalDetailsRoute")
+    @Operation(summary = "Method Summary")
     public ResponseEntity<BaseResponse<Void>> deleteClinicalDetail(@PathVariable Long id) {
         // Implementation for delete would go here
         return ResponseEntity.ok(new BaseResponse<>(true, "Deleted", null, null));
@@ -196,31 +196,31 @@ public class ClinicalController {
     // --- Addiction / Personal History (v1) ---
 
     @PostMapping("/addiction")
-    @Operation(summary = "POST /api/v1/addiction")
+    @Operation(summary = "addiction")
     public ResponseEntity<BaseResponse<PersonalHistory>> addAddiction(@RequestBody PersonalHistory history) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Addiction record added", null, clinicalService.addPersonalHistory(history, null)));
     }
 
     @GetMapping("/addiction/{patientId}")
-    @Operation(summary = "GET /api/v1/addiction/:patientId")
+    @Operation(summary = "addiction/:patientId")
     public ResponseEntity<BaseResponse<Page<PersonalHistory>>> getAddictionByPatient(@PathVariable Long patientId) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Addiction records found", null, clinicalService.getPersonalHistoryByPatient(patientId, PageRequest.of(0, 10))));
     }
 
     @PutMapping("/addiction/{id}")
-    @Operation(summary = "PUT /api/v1/addiction/:id")
+    @Operation(summary = "addiction/:id")
     public ResponseEntity<BaseResponse<PersonalHistory>> updateAddiction(@PathVariable Long id, @RequestBody PersonalHistory history) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Addiction record updated", null, clinicalService.addPersonalHistory(history, null)));
     }
 
     @DeleteMapping("/addiction/{id}")
-    @Operation(summary = "DELETE /api/v1/addiction/:id")
+    @Operation(summary = "addiction/:id")
     public ResponseEntity<BaseResponse<Void>> deleteAddiction(@PathVariable Long id) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Addiction record deleted", null, null));
     }
 
     @GetMapping("/all-clinical-details/")
-    @Operation(summary = "GET /api/v1/all-clinical-details/")
+    @Operation(summary = "all-clinical-details/")
     public ResponseEntity<BaseResponse<Void>> getAllClinicalDetails() {
         return ResponseEntity.ok(new BaseResponse<>(true, "All clinical details", null, null));
     }
@@ -228,19 +228,19 @@ public class ClinicalController {
     // --- Surgical History (v1) ---
 
     @PostMapping("/surgical")
-    @Operation(summary = "POST /api/v1/surgical")
+    @Operation(summary = "surgical")
     public ResponseEntity<BaseResponse<SurgicalHistory>> addSurgicalV1(@RequestBody SurgicalHistory history) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Surgical record added", null, clinicalService.addSurgicalHistory(history, null)));
     }
 
     @GetMapping("/surgical/{patientId}")
-    @Operation(summary = "GET /api/v1/surgical/:patientId")
+    @Operation(summary = "surgical/:patientId")
     public ResponseEntity<BaseResponse<Page<SurgicalHistory>>> getSurgicalByPatientV1(@PathVariable Long patientId) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Surgical records found", null, clinicalService.getSurgicalHistoryByPatient(patientId, PageRequest.of(0, 10))));
     }
 
     @PutMapping("/surgical/{id}")
-    @Operation(summary = "PUT /api/v1/surgical/:id")
+    @Operation(summary = "surgical/:id")
     public ResponseEntity<BaseResponse<SurgicalHistory>> updateSurgicalV1(@PathVariable Long id, @RequestBody SurgicalHistory history) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Surgical record updated", null, clinicalService.addSurgicalHistory(history, null)));
     }
@@ -248,25 +248,25 @@ public class ClinicalController {
     // --- Medical History (v1) ---
 
     @PostMapping("/medical")
-    @Operation(summary = "POST /api/v1/medical")
+    @Operation(summary = "medical")
     public ResponseEntity<BaseResponse<MedicalHistory>> addMedicalV1(@RequestBody MedicalHistory history) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Medical record added", null, clinicalService.addMedicalHistory(history, null)));
     }
 
     @GetMapping("/medical/{patientId}")
-    @Operation(summary = "GET /api/v1/medical/:patientId")
+    @Operation(summary = "medical/:patientId")
     public ResponseEntity<BaseResponse<Page<MedicalHistory>>> getMedicalByPatientV1(@PathVariable Long patientId) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Medical records found", null, clinicalService.getMedicalHistoryByPatient(patientId, PageRequest.of(0, 10))));
     }
 
     @PutMapping("/medical/{id}")
-    @Operation(summary = "PUT /api/v1/medical/:id")
+    @Operation(summary = "medical/:id")
     public ResponseEntity<BaseResponse<MedicalHistory>> updateMedicalV1(@PathVariable Long id, @RequestBody MedicalHistory history) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Medical record updated", null, clinicalService.addMedicalHistory(history, null)));
     }
 
     @DeleteMapping("/medical/{id}")
-    @Operation(summary = "DELETE /api/v1/medical/:id")
+    @Operation(summary = "medical/:id")
     public ResponseEntity<BaseResponse<Void>> deleteMedicalV1(@PathVariable Long id) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Medical record deleted", null, null));
     }
@@ -274,19 +274,19 @@ public class ClinicalController {
     // --- Personal History (v1) ---
 
     @PostMapping("/personalhistory")
-    @Operation(summary = "POST /api/v1/personalhistory")
+    @Operation(summary = "personalhistory")
     public ResponseEntity<BaseResponse<PersonalHistory>> addPersonalHistoryV1(@RequestBody PersonalHistory history) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Personal history added", null, clinicalService.addPersonalHistory(history, null)));
     }
 
     @GetMapping("/personalhistory/{patientId}")
-    @Operation(summary = "GET /api/v1/personalhistory/:patientId")
+    @Operation(summary = "personalhistory/:patientId")
     public ResponseEntity<BaseResponse<Page<PersonalHistory>>> getPersonalHistoryByPatientV1(@PathVariable Long patientId) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Personal history records found", null, clinicalService.getPersonalHistoryByPatient(patientId, PageRequest.of(0, 10))));
     }
 
     @PutMapping("/personalhistory/{id}")
-    @Operation(summary = "PUT /api/v1/personalhistory/:id")
+    @Operation(summary = "personalhistory/:id")
     public ResponseEntity<BaseResponse<PersonalHistory>> updatePersonalHistoryV1(@PathVariable Long id, @RequestBody PersonalHistory history) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Personal history updated", null, clinicalService.addPersonalHistory(history, null)));
     }
@@ -294,31 +294,31 @@ public class ClinicalController {
     // --- Diagnosis (v1) ---
 
     @PostMapping("/creatediagnosis")
-    @Operation(summary = "POST /api/v1/creatediagnosis")
+    @Operation(summary = "creatediagnosis")
     public ResponseEntity<BaseResponse<ClinicalDiagnosis>> createDiagnosisV1(@RequestBody ClinicalDiagnosis diagnosis) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Diagnosis created", null, clinicalService.addDiagnosis(diagnosis, null, null, null)));
     }
 
     @PutMapping("/updatediagnosis/{id}")
-    @Operation(summary = "PUT /api/v1/updatediagnosis/:id")
+    @Operation(summary = "updatediagnosis/:id")
     public ResponseEntity<BaseResponse<ClinicalDiagnosis>> updateDiagnosisV1(@PathVariable Long id, @RequestBody ClinicalDiagnosis diagnosis) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Diagnosis updated", null, clinicalService.addDiagnosis(diagnosis, null, null, null)));
     }
 
     @GetMapping("/getdiagnosis/{id}")
-    @Operation(summary = "GET /api/v1/getdiagnosis/:id")
+    @Operation(summary = "getdiagnosis/:id")
     public ResponseEntity<BaseResponse<ClinicalDiagnosis>> getDiagnosisV1(@PathVariable Long id) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Diagnosis found", null, null));
     }
 
     @GetMapping("/diagnosispatient/{patientId}")
-    @Operation(summary = "GET /api/v1/diagnosispatient/:patientId")
+    @Operation(summary = "diagnosispatient/:patientId")
     public ResponseEntity<BaseResponse<Page<ClinicalDiagnosis>>> getDiagnosisByPatientV1(@PathVariable Long patientId) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Diagnoses found", null, clinicalService.getDiagnosesByPatient(patientId, PageRequest.of(0, 10))));
     }
 
     @GetMapping("/visitdiagnosis/{visitId}")
-    @Operation(summary = "GET /api/v1/visitdiagnosis/:visitId")
+    @Operation(summary = "visitdiagnosis/:visitId")
     public ResponseEntity<BaseResponse<Void>> getVisitDiagnosisV1(@PathVariable Long visitId) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Visit diagnosis found", null, null));
     }
@@ -326,25 +326,25 @@ public class ClinicalController {
     // --- Doctor Notes (v1) ---
 
     @PostMapping("/createdoctornotes")
-    @Operation(summary = "POST /api/v1/createdoctornotes")
+    @Operation(summary = "createdoctornotes")
     public ResponseEntity<BaseResponse<DoctorNote>> createDoctorNoteV1(@RequestBody DoctorNote note) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Doctor note created", null, clinicalService.addDoctorNote(note, null, null)));
     }
 
     @PutMapping("/updatedoctornotes/{id}")
-    @Operation(summary = "PUT /api/v1/updatedoctornotes/:id")
+    @Operation(summary = "updatedoctornotes/:id")
     public ResponseEntity<BaseResponse<DoctorNote>> updateDoctorNoteV1(@PathVariable Long id, @RequestBody DoctorNote note) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Doctor note updated", null, clinicalService.addDoctorNote(note, null, null)));
     }
 
     @GetMapping("/updatedoctornotes/{id}")
-    @Operation(summary = "GET /api/v1/updatedoctornotes/:id")
+    @Operation(summary = "updatedoctornotes/:id")
     public ResponseEntity<BaseResponse<DoctorNote>> getDoctorNoteV1(@PathVariable Long id) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Doctor note found", null, null));
     }
 
     @DeleteMapping("/deletedoctornotes/{id}")
-    @Operation(summary = "DELETE /api/v1/deletedoctornotes/:id")
+    @Operation(summary = "deletedoctornotes/:id")
     public ResponseEntity<BaseResponse<Void>> deleteDoctorNoteV1(@PathVariable Long id) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Doctor note deleted", null, null));
     }
@@ -352,25 +352,25 @@ public class ClinicalController {
     // --- Prescription (v1) ---
 
     @PostMapping("/createPrescription/{visitId}")
-    @Operation(summary = "POST /api/v1/createPrescription/:visitId")
+    @Operation(summary = "createPrescription/:visitId")
     public ResponseEntity<BaseResponse<ClinicalPrescription>> createPrescriptionV1(@PathVariable Long visitId, @RequestBody ClinicalPrescription prescription) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Prescription created", null, clinicalService.addPrescription(prescription, null, null, visitId)));
     }
 
     @PutMapping("/updatePrescription/{id}")
-    @Operation(summary = "PUT /api/v1/updatePrescription/:id")
+    @Operation(summary = "updatePrescription/:id")
     public ResponseEntity<BaseResponse<ClinicalPrescription>> updatePrescriptionV1(@PathVariable Long id, @RequestBody ClinicalPrescription prescription) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Prescription updated", null, clinicalService.addPrescription(prescription, null, null, null)));
     }
 
     @GetMapping("/getPrescription/{id}")
-    @Operation(summary = "GET /api/v1/getPrescription/:id")
+    @Operation(summary = "getPrescription/:id")
     public ResponseEntity<BaseResponse<ClinicalPrescription>> getPrescriptionV1(@PathVariable Long id) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Prescription found", null, null));
     }
 
     @DeleteMapping("/deletePrescription/{id}")
-    @Operation(summary = "DELETE /api/v1/deletePrescription/:id")
+    @Operation(summary = "deletePrescription/:id")
     public ResponseEntity<BaseResponse<Void>> deletePrescriptionV1(@PathVariable Long id) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Prescription deleted", null, null));
     }
@@ -410,7 +410,7 @@ public class ClinicalController {
 
     @GetMapping("/emr/{id}")
     @PreAuthorize("hasAuthority('CLINICAL_READ')")
-    @Operation(summary = "Get EMR record by ID")
+    @Operation(summary = "Method Summary")
     public ResponseEntity<BaseResponse<EMRRecordResponseDTO>> getEMRById(@PathVariable Long id) {
         EMRRecord record = clinicalService.getEMRRecordById(id);
         return ResponseEntity.ok(new BaseResponse<>(true, "EMR record found", null, toEMRResponseDTO(record)));
@@ -438,7 +438,7 @@ public class ClinicalController {
 
     @GetMapping("/nursing-note/admission/{admissionId}")
     @PreAuthorize("hasAuthority('CLINICAL_READ')")
-    @Operation(summary = "Get nursing notes by admission")
+    @Operation(summary = "Method Summary")
     public ResponseEntity<BaseResponse<Page<NursingNote>>> getNursingNotes(
             @PathVariable Long admissionId,
             @RequestParam(defaultValue = "0") int page,
@@ -461,7 +461,7 @@ public class ClinicalController {
 
     @GetMapping("/discharge-summary/admission/{admissionId}")
     @PreAuthorize("hasAuthority('CLINICAL_READ')")
-    @Operation(summary = "Get discharge summary by admission ID")
+    @Operation(summary = "Method Summary")
     public ResponseEntity<BaseResponse<DischargeSummary>> getDischargeSummary(@PathVariable Long admissionId) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Discharge summary found", null, clinicalService.getDischargeSummaryByAdmission(admissionId)));
     }
@@ -538,7 +538,7 @@ public class ClinicalController {
 
     @GetMapping("/surgical-history/patient/{patientId}")
     @PreAuthorize("hasAuthority('CLINICAL_READ')")
-    @Operation(summary = "Get surgical history by patient")
+    @Operation(summary = "Method Summary")
     public ResponseEntity<BaseResponse<Page<SurgicalHistory>>> getSurgicalHistory(
             @PathVariable Long patientId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Surgical history found", null, clinicalService.getSurgicalHistoryByPatient(patientId, PageRequest.of(page, size))));
@@ -555,7 +555,7 @@ public class ClinicalController {
 
     @GetMapping("/medical-history/patient/{patientId}")
     @PreAuthorize("hasAuthority('CLINICAL_READ')")
-    @Operation(summary = "Get medical history by patient")
+    @Operation(summary = "Method Summary")
     public ResponseEntity<BaseResponse<Page<MedicalHistory>>> getMedicalHistory(
             @PathVariable Long patientId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Medical history found", null, clinicalService.getMedicalHistoryByPatient(patientId, PageRequest.of(page, size))));
@@ -572,7 +572,7 @@ public class ClinicalController {
 
     @GetMapping("/personal-history/patient/{patientId}")
     @PreAuthorize("hasAuthority('CLINICAL_READ')")
-    @Operation(summary = "Get personal history by patient")
+    @Operation(summary = "Method Summary")
     public ResponseEntity<BaseResponse<Page<PersonalHistory>>> getPersonalHistory(
             @PathVariable Long patientId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Personal history found", null, clinicalService.getPersonalHistoryByPatient(patientId, PageRequest.of(page, size))));
@@ -592,7 +592,7 @@ public class ClinicalController {
 
     @GetMapping("/diagnosis/patient/{patientId}")
     @PreAuthorize("hasAuthority('CLINICAL_READ')")
-    @Operation(summary = "Get diagnoses by patient")
+    @Operation(summary = "Method Summary")
     public ResponseEntity<BaseResponse<Page<ClinicalDiagnosis>>> getDiagnosesByPatient(
             @PathVariable Long patientId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Diagnoses found", null, clinicalService.getDiagnosesByPatient(patientId, PageRequest.of(page, size))));
@@ -609,7 +609,7 @@ public class ClinicalController {
 
     @GetMapping("/doctor-note/patient/{patientId}")
     @PreAuthorize("hasAuthority('CLINICAL_READ')")
-    @Operation(summary = "Get doctor notes by patient")
+    @Operation(summary = "Method Summary")
     public ResponseEntity<BaseResponse<Page<DoctorNote>>> getDoctorNotes(
             @PathVariable Long patientId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Doctor notes found", null, clinicalService.getDoctorNotesByPatient(patientId, PageRequest.of(page, size))));
@@ -629,9 +629,10 @@ public class ClinicalController {
 
     @GetMapping("/prescription/patient/{patientId}")
     @PreAuthorize("hasAuthority('CLINICAL_READ')")
-    @Operation(summary = "Get prescriptions by patient")
+    @Operation(summary = "Method Summary")
     public ResponseEntity<BaseResponse<Page<ClinicalPrescription>>> getPrescriptionsByPatient(
             @PathVariable Long patientId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Prescriptions found", null, clinicalService.getPrescriptionsByPatient(patientId, PageRequest.of(page, size))));
     }
 }
+

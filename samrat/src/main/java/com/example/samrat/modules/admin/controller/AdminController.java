@@ -31,7 +31,7 @@ public class AdminController {
 
     @GetMapping("/users")
     @PreAuthorize("hasAuthority('ADMIN_READ')")
-    @Operation(summary = "Get all users (paginated)", description = "Retrieves a paginated list of all user accounts")
+    @Operation(summary = "Method Summary", description = "Retrieves a paginated list of all user accounts")
     public ResponseEntity<BaseResponse<Page<User>>> getAllUsers(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -55,15 +55,16 @@ public class AdminController {
 
     @GetMapping("/roles")
     @PreAuthorize("hasAuthority('ADMIN_READ')")
-    @Operation(summary = "Get all roles", description = "Retrieves all security roles defined in the system")
+    @Operation(summary = "Method Summary", description = "Retrieves all security roles defined in the system")
     public ResponseEntity<BaseResponse<List<Role>>> getAllRoles() {
         return ResponseEntity.ok(new BaseResponse<>(true, "Roles found", null, roleRepository.findAll()));
     }
 
     @GetMapping("/branches")
     @PreAuthorize("hasAuthority('ADMIN_READ')")
-    @Operation(summary = "Get all branches", description = "Retrieves all branches associated with the hospital")
+    @Operation(summary = "Method Summary", description = "Retrieves all branches associated with the hospital")
     public ResponseEntity<BaseResponse<List<Branch>>> getAllBranches() {
         return ResponseEntity.ok(new BaseResponse<>(true, "Branches found", null, branchRepository.findAll()));
     }
 }
+

@@ -41,7 +41,7 @@ public class AssetController {
     }
 
     @GetMapping("/masters/{id}")
-    @Operation(summary = "Get Assets - Masters by ID")
+    @Operation(summary = "Method Summary")
     public ResponseEntity<BaseResponse<Asset>> getAssetMasterById(@PathVariable Long id) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Detail", null, assetService.getAssetById(id)));
     }
@@ -53,7 +53,7 @@ public class AssetController {
     }
 
     @DeleteMapping("/masters/{id}")
-    @Operation(summary = "Delete Assets - Masters")
+    @Operation(summary = "Method Summary")
     public ResponseEntity<BaseResponse<Void>> deleteAssetMaster(@PathVariable Long id) {
         return ResponseEntity.ok(new BaseResponse<>(true, "Deleted", null, null));
     }
@@ -181,3 +181,4 @@ public class AssetController {
         return ResponseEntity.ok(new BaseResponse<>(true, "Usage logs found", null, null));
     }
 }
+

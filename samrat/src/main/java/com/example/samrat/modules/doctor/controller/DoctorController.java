@@ -34,7 +34,7 @@ public class DoctorController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('DOCTOR_READ')")
-    @Operation(summary = "Get all doctors", description = "Retrieves a paginated list of all doctors")
+    @Operation(summary = "Method Summary", description = "Retrieves a paginated list of all doctors")
     public ResponseEntity<BaseResponse<Page<DoctorDTO>>> getAllDoctors(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -45,7 +45,7 @@ public class DoctorController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('DOCTOR_READ')")
-    @Operation(summary = "Get doctor by ID", description = "Retrieves a doctor's details by ID")
+    @Operation(summary = "Method Summary", description = "Retrieves a doctor's details by ID")
     public ResponseEntity<BaseResponse<DoctorDTO>> getDoctorById(@PathVariable Long id) {
         DoctorDTO doctor = doctorService.getDoctorById(id);
         return ResponseEntity.ok(new BaseResponse<>(true, "Doctor found", null, doctor));
@@ -61,7 +61,7 @@ public class DoctorController {
 
     @GetMapping("/available")
     @PreAuthorize("hasAuthority('DOCTOR_READ')")
-    @Operation(summary = "Get available doctors", description = "Retrieves a list of doctors currently available for consultations")
+    @Operation(summary = "Method Summary", description = "Retrieves a list of doctors currently available for consultations")
     public ResponseEntity<BaseResponse<List<DoctorDTO>>> getAvailableDoctors() {
         List<DoctorDTO> doctors = doctorService.getAvailableDoctors();
         return ResponseEntity.ok(new BaseResponse<>(true, "Available doctors found", null, doctors));
@@ -69,7 +69,7 @@ public class DoctorController {
 
     @GetMapping("/specialization")
     @PreAuthorize("hasAuthority('DOCTOR_READ')")
-    @Operation(summary = "Get doctors by specialization", description = "Finds doctors based on their medical specialization")
+    @Operation(summary = "Method Summary", description = "Finds doctors based on their medical specialization")
     public ResponseEntity<BaseResponse<List<DoctorDTO>>> getDoctorsBySpecialization(@RequestParam String specialization) {
         List<DoctorDTO> doctors = doctorService.getDoctorsBySpecialization(specialization);
         return ResponseEntity.ok(new BaseResponse<>(true, "Doctors found by specialization", null, doctors));
@@ -77,7 +77,7 @@ public class DoctorController {
 
     @GetMapping("/department/{departmentId}")
     @PreAuthorize("hasAuthority('DOCTOR_READ')")
-    @Operation(summary = "Get doctors by department", description = "Retrieves all doctors belonging to a specific department")
+    @Operation(summary = "Method Summary", description = "Retrieves all doctors belonging to a specific department")
     public ResponseEntity<BaseResponse<List<DoctorDTO>>> getDoctorsByDepartment(@PathVariable Long departmentId) {
         List<DoctorDTO> doctors = doctorService.getDoctorsByDepartment(departmentId);
         return ResponseEntity.ok(new BaseResponse<>(true, "Doctors found for department", null, doctors));
@@ -98,9 +98,10 @@ public class DoctorController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('DOCTOR_DELETE')")
-    @Operation(summary = "Delete doctor", description = "Deletes a doctor record")
+    @Operation(summary = "Method Summary", description = "Deletes a doctor record")
     public ResponseEntity<BaseResponse<Void>> deleteDoctor(@PathVariable Long id) {
         doctorService.deleteDoctor(id);
         return ResponseEntity.ok(new BaseResponse<>(true, "Doctor deleted successfully", null, null));
     }
 }
+

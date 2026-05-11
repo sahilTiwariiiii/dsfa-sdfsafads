@@ -30,9 +30,10 @@ public class PatientVitalController {
 
     @GetMapping("/history/{patientId}")
     @PreAuthorize("hasAuthority('CLINICAL_READ')")
-    @Operation(summary = "Get vitals history", description = "Retrieves all historical vitals for a patient, ordered by date descending.")
+    @Operation(summary = "Method Summary", description = "Retrieves all historical vitals for a patient, ordered by date descending.")
     public ResponseEntity<BaseResponse<List<PatientVitalDTO>>> getVitalsHistory(@PathVariable Long patientId) {
         List<PatientVitalDTO> history = patientVitalService.getPatientVitalsHistory(patientId);
         return ResponseEntity.ok(new BaseResponse<>(true, "Vitals history retrieved", null, history));
     }
 }
+

@@ -35,7 +35,7 @@ public class DepartmentController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('DEPARTMENT_READ')")
-    @Operation(summary = "Get all departments", description = "Retrieves all departments available in the current hospital branch with pagination")
+    @Operation(summary = "Method Summary", description = "Retrieves all departments available in the current hospital branch with pagination")
     public ResponseEntity<BaseResponse<Page<Department>>> getAllDepartments(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -54,7 +54,7 @@ public class DepartmentController {
 
     @GetMapping("/active")
     @PreAuthorize("hasAuthority('DEPARTMENT_READ')")
-    @Operation(summary = "Get active departments", description = "Retrieves all active departments")
+    @Operation(summary = "Method Summary", description = "Retrieves all active departments")
     public ResponseEntity<BaseResponse<List<Department>>> getActiveDepartments() {
         List<Department> departments = departmentService.getActiveDepartments();
         return ResponseEntity.ok(new BaseResponse<>(true, "Active departments found", null, departments));
@@ -62,7 +62,7 @@ public class DepartmentController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('DEPARTMENT_READ')")
-    @Operation(summary = "Get department by ID", description = "Retrieves a department by ID")
+    @Operation(summary = "Method Summary", description = "Retrieves a department by ID")
     public ResponseEntity<BaseResponse<Department>> getDepartmentById(@PathVariable Long id) {
         Department department = departmentService.getDepartmentById(id);
         return ResponseEntity.ok(new BaseResponse<>(true, "Department found", null, department));
@@ -70,7 +70,7 @@ public class DepartmentController {
 
     @GetMapping("/code/{code}")
     @PreAuthorize("hasAuthority('DEPARTMENT_READ')")
-    @Operation(summary = "Get department by code", description = "Retrieves a department by its unique code")
+    @Operation(summary = "Method Summary", description = "Retrieves a department by its unique code")
     public ResponseEntity<BaseResponse<Department>> getDepartmentByCode(@PathVariable String code) {
         Department department = departmentService.getDepartmentByCode(code);
         return ResponseEntity.ok(new BaseResponse<>(true, "Department found", null, department));
@@ -98,9 +98,10 @@ public class DepartmentController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN_WRITE')")
-    @Operation(summary = "Delete department", description = "Deletes a department")
+    @Operation(summary = "Method Summary", description = "Deletes a department")
     public ResponseEntity<BaseResponse<Void>> deleteDepartment(@PathVariable Long id) {
         departmentService.deleteDepartment(id);
         return ResponseEntity.ok(new BaseResponse<>(true, "Department deleted successfully", null, null));
     }
 }
+
