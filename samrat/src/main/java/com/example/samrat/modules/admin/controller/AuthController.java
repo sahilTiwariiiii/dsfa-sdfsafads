@@ -129,7 +129,7 @@ public class AuthController {
                     )
             }
     )
-    public ResponseEntity<BaseResponse<Map<String, String>>> login(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<BaseResponse<Map<String, Object>>> login(@Valid @RequestBody LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getUsername(),
@@ -139,8 +139,17 @@ public class AuthController {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = tokenProvider.generateToken(authentication);
+        User user = userRepository.findByUsernameAndActiveTrue(loginRequest.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found: " + loginRequest.getUsername()));
 
-        return ResponseEntity.ok(new BaseResponse<>(true, "Login successful", null, Map.of("token", jwt)));
+        List<String> roles = user.getRoles().stream()
+                .map(com.example.samrat.modules.admin.entity.Role::getName)
+                .toList();
+
+        return ResponseEntity.ok(new BaseResponse<>(true, "Login successful", null, Map.of(
+                "token", jwt,
+                "roles", roles
+        )));
     }
 
     @GetMapping("/users")
